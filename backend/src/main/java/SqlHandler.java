@@ -8,7 +8,8 @@ public class SqlHandler implements TaskManager {
     private String username;
     private String password;
     private static final String changeTask = "UPDATE tasks SET task_name = (?) WHERE task_id = (?)";
-    private static final String createTask = "INSERT INTO tasks (task_name) VALUES (?)";
+    private static final String markTaskComplete = "UPDATE tasks SET completed = (?) WHERE task_id = (?)";
+    private static final String createTask = "INSERT INTO tasks (task_name, completed) VALUES (?, ?)";
     private static final String deleteTask = "DELETE FROM tasks WHERE task_id = (?)";
 
     public SqlHandler(String dbURL, String username, String password){
@@ -47,6 +48,7 @@ public class SqlHandler implements TaskManager {
             if (conn != null) {
                 PreparedStatement statement = conn.prepareStatement(createTask, id);
                 statement.setString(1, newTask);
+                statement.setBoolean(2, false);
                 statement.executeUpdate();
                 System.out.println("Successfully added task to DB");
             }
@@ -56,7 +58,15 @@ public class SqlHandler implements TaskManager {
     }
 
     @Override
-    public boolean isCompleted() {
-        return false;
+    public void markComplete(int id) {
+        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
+            PreparedStatement statement = conn.prepareStatement(markTaskComplete, id);
+            statement.setBoolean(1, true);
+            statement.setInt(2, id);
+            statement.executeUpdate();
+            System.out.println("Successfully marked task complete in DB");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

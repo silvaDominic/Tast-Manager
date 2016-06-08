@@ -8,5 +8,5 @@ interface TaskManager {
 
     public void createTask(String newTask, int id);
 
-    public boolean isCompleted();
+    public void markComplete(int id);
 }
