@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html lang = "en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Task Manager</title>
+
+        <script src = "http://code.jquery.com/jquery-1.12.1.min.js"></script>
+        <script src = "resources/date-dropdown-plugin/jquery-dropdate.js"></script>
+        <script src = "resources/date-dropdown-plugin/date.format.js"></script>
+        <script type = "text/javascript" src = "index.js"></script>
+        <link rel = stylesheet type = "text/css" href = "index.css"/>
+    </head>
+
+<body id = "body">
+    <form id = "task_form" action = "localhost:4567/tasks" method = "post">
+        <fieldset>
+            Task:
+            <input type = "text" name = "task">
+            Finish by:
+            <input type = "text" name = target_date class = "dropdate">
+            <input type = "submit" value = "Add">
+            <input type = "button" value = "Delete">
+        </fieldset>
+    </form>
+
+</body>
+
+</html>
