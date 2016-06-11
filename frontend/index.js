@@ -8,6 +8,9 @@ $(document).ready(function() {
     // Binds submit event from form
     $("task_form").submit(function(event){
 
+        // Prevent form from submitting from browser
+        event.preventDefault();
+
         $form = $(this);
 
         // Aborts any pending requests
@@ -18,18 +21,42 @@ $(document).ready(function() {
         // Selects and caches input field
         var $inputs = $form.find("input");
 
-        // Serializes form data
-        var serializedData = $form.serialize();
-
         // Briefly disables input fields during duration of AJAX request
         $inputs.prop("disabled", true);
 
-        // AJAX request
+        // AJAX requests
         request = $.ajax({
-            url: "localhost:4567/tasks",
-            type: "post",
-            data: serializedData
+            url: $form.attr('action'),
+            type: $form.attr('method'),
+            data: $form.serialize()
+        }).done(function(response, textStatus, jqXHR){
+            console.log("Post successful.");
+            console.log("Response: " + response);
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        }).fail(function(data){
+            console.log("Error.");
+            console.log("Response: " + response);
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
         });
+
+        request = $.ajax({
+            url: $form.attr('action'),
+            type: $form.attr('method'),
+            data: $form.serialize()
+        }).done(function(response, textStatus, jqXHR){
+            console.log("Post successful.");
+            console.log("Response: " + response);
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        }).fail(function(data){
+            console.log("Error.");
+            console.log("Response: " + response);
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        });
+
         // Callback handler for successful requests
         request.done(function (response, textStatus, jqXHR){
             console.log("Success")
@@ -44,5 +71,5 @@ $(document).ready(function() {
         request.always(function(){
             $inputs.prop("disabled", false);
         });
-    })
+    });
 });

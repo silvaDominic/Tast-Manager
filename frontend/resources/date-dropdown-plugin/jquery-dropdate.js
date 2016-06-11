@@ -7,8 +7,8 @@
 
 	var name = "dropdate",
     defaults = {
-		minYear:1970,
-		maxYear:new Date().getFullYear(),
+		minYear:new Date().getFullYear(),
+		maxYear:new Date().getFullYear() + 1,
 		format:'yyyy/mm/dd',
 		className:'dropdate-select',
 		defaultDate:new Date()
