@@ -4,32 +4,34 @@ import java.util.Date;
  * Created by reclaimer on 6/5/16.
  */
 public class Task {
-    private int taskId;
-    private String taskName;
+    private int id;
+    private String name;
     private Date targetDate;
     private boolean isComplete;
 
-    public Task(int taskId, String taskName){
-        this.taskId = taskId;
-        this.taskName = taskName;
+    public Task(int id, String name){
+        this.id = id;
+        this.name = name;
         this.targetDate = targetDate;
         this.isComplete = false;
     }
 
+    public Task(){}
+
     // --------------------------------------- GETTERS AND SETTERS -----------------------------------------------------
 
     // Task ID
-    public int getTaskID(){
-        return this.taskId;
+    public int getId(){
+        return this.id;
     }
 
     // Task name
-    public String getTaskName(){
-        return this.taskName;
+    public String getName(){
+        return this.name;
     }
 
-    public void setTaskName(String newTaskName){
-        this.taskName = newTaskName;
+    public void setName(String newTaskName){
+        this.name = newTaskName;
     }
 
     // Target date

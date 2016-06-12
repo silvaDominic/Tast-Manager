@@ -41,21 +41,7 @@ $(document).ready(function() {
             console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
         });
 
-        request = $.ajax({
-            url: $form.attr('action'),
-            type: $form.attr('method'),
-            data: $form.serialize()
-        }).done(function(response, textStatus, jqXHR){
-            console.log("Post successful.");
-            console.log("Response: " + response);
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        }).fail(function(data){
-            console.log("Error.");
-            console.log("Response: " + response);
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        });
+        // TODO: What's the format of the date when sent via JSON?
 
         // Callback handler for successful requests
         request.done(function (response, textStatus, jqXHR){
