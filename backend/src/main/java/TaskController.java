@@ -7,22 +7,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static spark.Spark. *;
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 /**
- * Created by reclaimer on 5/15/16.
+ * Created by reclaimer on 6/12/16.
  */
+public class TaskController {
 
-public class TaskApp {
-    public static void main(String[] args) {
-
-        // -------------------------------------------TESTING-----------------------------------------------------------
+    public TaskController(final Tasks Tasks){
         //Create variables for access to local host
         String dbURL = "jdbc:mysql://localhost:3306/TaskDB?autoReconnect=true&useSSL=false";
         String username = "root";
-        String password = "roo7CLAUD1tis8";
+        String password = "---";
 
-        ArrayList<Task> taskList = new ArrayList<>();
         SqlHandler sql = new SqlHandler(dbURL, username, password);
 
         post("/tasks", (request, response) -> {
@@ -30,7 +29,7 @@ public class TaskApp {
                 ObjectMapper mapper = new ObjectMapper();
                 Task task = mapper.readValue(request.body(), Task.class);
                 sql.createTask(task.getName(), task.getId());
-                taskList.add(task);
+                Tasks.addTask(task);
             } catch (JsonGenerationException jsonGenErr){
                 jsonGenErr.printStackTrace();
             } catch (JsonMappingException jsonMapErr) {
@@ -52,7 +51,7 @@ public class TaskApp {
 
                 sql.changeTaskName();
             } catch
-            // TODO: How should dates be handled?
+            // TODO: How should dates be handled? -- Implement PUT method
         });*/
 
         delete("/tasks/:id", (request, response) -> {
@@ -61,14 +60,13 @@ public class TaskApp {
             return response;
         });
 
-        get("/tasks", (request, response) -> TasklistToJSON(taskList));
+        get("/tasks", (request, response) -> TasklistToJSON(Tasks.getAllTasks()));
 
         get("/tasks/:id", (request, response) -> {
-            return ;
+            int id = Integer.parseInt(request.params(":id"));
+            return TaskToJSON(Tasks.getTask(id));
         });
     }
-
-    // TODO: implement put and get(id) calls
 
     // NOT SURE IF I EVEN NEED THIS
     private static Task jsonToTask(String json){
