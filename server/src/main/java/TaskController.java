@@ -16,11 +16,11 @@ import static spark.Spark.post;
  */
 public class TaskController {
 
-    public TaskController(final TaskRepository taskRepository){
+    public TaskController(){
         //Create variables for access to local host
         String dbURL = "jdbc:mysql://localhost:3306/TaskDB?autoReconnect=true&useSSL=false";
         String username = "root";
-        String password = "---";
+        String password = "roo7CLAUD1tis8";
 
         SqlHandler sql = new SqlHandler(dbURL, username, password);
 
@@ -41,17 +41,15 @@ public class TaskController {
             return response;
         });
 
-/*        put("/taskRepository/:id", (request, response) -> {
+        put("/tasks/:id", (request, response) -> {
             try{
-                request.params(":id");
-                request.queryParams("name");
-                request.queryParams("targetDate");
-                request.queryParams("isCompleted");
 
+                sql.changeTaskId();
                 sql.changeTaskName();
+                sql.changeTargetDate();
             } catch
             // TODO: How should dates be handled? -- Implement PUT method
-        });*/
+        });
 
         delete("/tasks/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
@@ -59,7 +57,9 @@ public class TaskController {
             return response;
         });
 
-        get("/tasks", (request, response) -> TasklistToJSON(sql.getAllTasks())); // TODO: Not getting called
+        get("/tasks", (request, response) -> {
+            return TasklistToJSON(sql.getAllTasks());
+        });
 
         get("/tasks/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));

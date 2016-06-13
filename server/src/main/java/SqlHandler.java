@@ -9,13 +9,13 @@ public class SqlHandler implements TaskManager {
     private String dbURL;
     private String username;
     private String password;
-    private static final String selectTask = "SELECT * FROM tasks WHERE task_id = (?)";
+    private static final String selectTask = "SELECT * FROM tasks WHERE id = (?)";
     private static final String selectAllTasks = "SELECT * FROM tasks";
-    private static final String changeTaskName = "UPDATE tasks SET task_name = (?) WHERE task_id = (?)";
-    private static final String changeTargetDate = "UPDATE tasks SET target_date = (?) WHERE task_id = (?)";
-    private static final String markTaskComplete = "UPDATE tasks SET completed = (?) WHERE task_id = (?)";
-    private static final String createTask = "INSERT INTO tasks (task_name, completed) VALUES (?, ?)";
-    private static final String deleteTask = "DELETE FROM tasks WHERE task_id = (?)";
+    private static final String changeTaskName = "UPDATE tasks SET name = (?) WHERE id = (?)";
+    private static final String changeTargetDate = "UPDATE tasks SET target_date = (?) WHERE id = (?)";
+    private static final String markTaskComplete = "UPDATE tasks SET completed = (?) WHERE id = (?)";
+    private static final String createTask = "INSERT INTO tasks (name, completed) VALUES (?, ?)";
+    private static final String deleteTask = "DELETE FROM tasks WHERE id = (?)";
 
     public SqlHandler(String dbURL, String username, String password){
         this.dbURL = dbURL;
@@ -60,6 +60,7 @@ public class SqlHandler implements TaskManager {
             e.printStackTrace();
         }
     }
+
     @Override
     public void createTask(int id, String newTask) {
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
@@ -90,14 +91,14 @@ public class SqlHandler implements TaskManager {
 
     @Override
     public ArrayList<Task> getAllTasks(){
-        ArrayList<Task> tasks = null;
+        ArrayList<Task> tasks = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             Statement statement = conn.createStatement();
             ResultSet taskSet = statement.executeQuery(selectAllTasks);
             while(taskSet.next()){
                 Task task = new Task(taskSet.getInt(1), taskSet.getString(2));
                 task.setTargetDate(taskSet.getDate(3));
-                tasks.add(task); // TODO: Figure out how to handle this
+                tasks.add(task);
             }
             System.out.println("Successfully retrieved all tasks");
         } catch (SQLException e) {
@@ -113,8 +114,9 @@ public class SqlHandler implements TaskManager {
             PreparedStatement statement = conn.prepareStatement(selectTask, id);
             statement.setInt(1, id);
             ResultSet taskSet = statement.executeQuery();
-            task  = new Task(taskSet.getInt(1), taskSet.getString(2)); // TODO: Why is this throwing an SQL Exception?
-            System.out.println("Successfully retrieved all tasks");
+            taskSet.next();
+            task = new Task(taskSet.getInt(1), taskSet.getString(2)); // TODO: Why is this throwing an SQL Exception?
+            System.out.println("Successfully retrieved tasks: " + id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
