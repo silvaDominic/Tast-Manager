@@ -16,7 +16,7 @@ import static spark.Spark.post;
  */
 public class TaskController {
 
-    public TaskController(final Tasks Tasks){
+    public TaskController(final TaskRepository taskRepository){
         //Create variables for access to local host
         String dbURL = "jdbc:mysql://localhost:3306/TaskDB?autoReconnect=true&useSSL=false";
         String username = "root";
@@ -28,8 +28,7 @@ public class TaskController {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 Task task = mapper.readValue(request.body(), Task.class);
-                sql.createTask(task.getName(), task.getId());
-                Tasks.addTask(task);
+                sql.createTask(task.getId(), task.getName());
             } catch (JsonGenerationException jsonGenErr){
                 jsonGenErr.printStackTrace();
             } catch (JsonMappingException jsonMapErr) {
@@ -42,7 +41,7 @@ public class TaskController {
             return response;
         });
 
-/*        put("/tasks/:id", (request, response) -> {
+/*        put("/taskRepository/:id", (request, response) -> {
             try{
                 request.params(":id");
                 request.queryParams("name");
@@ -60,37 +59,15 @@ public class TaskController {
             return response;
         });
 
-        get("/tasks", (request, response) -> TasklistToJSON(Tasks.getAllTasks()));
+        get("/tasks", (request, response) -> TasklistToJSON(sql.getAllTasks())); // TODO: Not getting called
 
         get("/tasks/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
-            return TaskToJSON(Tasks.getTask(id));
+            return TaskToJSON(sql.getTask(id));
         });
     }
 
-    // NOT SURE IF I EVEN NEED THIS
-    private static Task jsonToTask(String json){
-        Task task = null;
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            task = mapper.readValue(json, Task.class);
-            System.out.println(task.getId());
-
-        } catch (JsonGenerationException jsonGenErr){
-            task = null;
-            jsonGenErr.printStackTrace();
-        } catch (JsonMappingException jsonMapErr) {
-            task = null;
-            jsonMapErr.printStackTrace();
-        } catch (JsonParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return task;
-    }
-
-    private static String TaskToJSON(Object obj){
+    private String TaskToJSON(Object obj){
         ObjectMapper mapper = new ObjectMapper();
         String json = "null";
         try {
@@ -101,7 +78,7 @@ public class TaskController {
         return json;
     }
 
-    private static ArrayList TasklistToJSON(ArrayList list){
+    private ArrayList TasklistToJSON(ArrayList list){
         // Initialize and instantiate Object Mapper and JSON object
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<String> jsonString = new ArrayList<String>();

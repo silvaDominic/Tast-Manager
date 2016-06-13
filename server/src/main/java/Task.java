@@ -12,7 +12,7 @@ public class Task {
     public Task(int id, String name){
         this.id = id;
         this.name = name;
-        this.targetDate = targetDate;
+        this.targetDate = targetDate; // TODO: Add to parameters figuring out format
         this.isComplete = false;
     }
 

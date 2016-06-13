@@ -5,11 +5,11 @@ import java.util.Map;
 /**
  * Created by reclaimer on 6/12/16.
  */
-public class Tasks {
+public class TaskRepository {
 
     private Map<Integer, Task> tasks = new HashMap<>();
 
-    public Tasks(){
+    public TaskRepository(){
     }
 
     public ArrayList<Task> getAllTasks(){
