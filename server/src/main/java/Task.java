@@ -1,4 +1,4 @@
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * Created by reclaimer on 6/5/16.
@@ -9,11 +9,18 @@ public class Task {
     private Date targetDate;
     private boolean isComplete;
 
-    public Task(int id, String name){
+    public Task(int id, String name, Date targetDate){
         this.id = id;
         this.name = name;
         this.targetDate = targetDate; // TODO: Add to parameters figuring out format
         this.isComplete = false;
+    }
+
+    public Task(int id, String name, Date targetDate, boolean status){
+        this.id = id;
+        this.name = name;
+        this.targetDate = targetDate; // TODO: Add to parameters figuring out format
+        this.isComplete = status;
     }
 
     public Task(){}
@@ -41,5 +48,13 @@ public class Task {
 
     public void setTargetDate(Date newDate){
         this.targetDate = newDate;
+    }
+
+    public boolean getStatus(){
+        return this.isComplete;
+    }
+
+    public void setStatus(boolean status){
+        this.isComplete = status;
     }
 }

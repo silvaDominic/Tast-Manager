@@ -11,9 +11,9 @@ interface TaskManager {
 
     public void deleteTask(int id);
 
-    public void createTask(int id, String newTask);
+    public void createTask(int id, String newTask, Date targetDate);
 
-    public void markComplete(int id);
+    public void taskStatus(int id, boolean status);
 
     public ArrayList<Task> getAllTasks();
 

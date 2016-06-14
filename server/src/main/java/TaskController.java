@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 /**
  * Created by reclaimer on 6/12/16.
@@ -28,7 +25,7 @@ public class TaskController {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 Task task = mapper.readValue(request.body(), Task.class);
-                sql.createTask(task.getId(), task.getName());
+                sql.createTask(task.getId(), task.getName(), task.getTargetDate());
             } catch (JsonGenerationException jsonGenErr){
                 jsonGenErr.printStackTrace();
             } catch (JsonMappingException jsonMapErr) {
@@ -43,11 +40,21 @@ public class TaskController {
 
         put("/tasks/:id", (request, response) -> {
             try{
-
-                sql.changeTaskId();
-                sql.changeTaskName();
-                sql.changeTargetDate();
-            } catch
+                ObjectMapper mapper = new ObjectMapper();
+                Task task = mapper.readValue(request.body(), Task.class);
+                sql.changeTaskName(task.getId(), task.getName());
+                sql.changeTaskDate(task.getId(), task.getTargetDate());
+                sql.taskStatus(task.getId(), task.getStatus());
+            } catch (JsonGenerationException jsonGenErr){
+                jsonGenErr.printStackTrace();
+            } catch (JsonMappingException jsonMapErr) {
+                jsonMapErr.printStackTrace();
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return response;
             // TODO: How should dates be handled? -- Implement PUT method
         });
 

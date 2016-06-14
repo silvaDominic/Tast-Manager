@@ -13,8 +13,8 @@ public class SqlHandler implements TaskManager {
     private static final String selectAllTasks = "SELECT * FROM tasks";
     private static final String changeTaskName = "UPDATE tasks SET name = (?) WHERE id = (?)";
     private static final String changeTargetDate = "UPDATE tasks SET target_date = (?) WHERE id = (?)";
-    private static final String markTaskComplete = "UPDATE tasks SET completed = (?) WHERE id = (?)";
-    private static final String createTask = "INSERT INTO tasks (name, completed) VALUES (?, ?)";
+    private static final String changeTaskStatus = "UPDATE tasks SET completed = (?) WHERE id = (?)";
+    private static final String createTask = "INSERT INTO tasks (name, target_date, completed) VALUES (?, ?, ?)";
     private static final String deleteTask = "DELETE FROM tasks WHERE id = (?)";
 
     public SqlHandler(String dbURL, String username, String password){
@@ -62,12 +62,13 @@ public class SqlHandler implements TaskManager {
     }
 
     @Override
-    public void createTask(int id, String newTask) {
+    public void createTask(int id, String newTask, Date targetDate) {
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             if (conn != null) {
                 PreparedStatement statement = conn.prepareStatement(createTask, id);
                 statement.setString(1, newTask);
-                statement.setBoolean(2, false);
+                statement.setDate(2, targetDate);
+                statement.setBoolean(3, false);
                 statement.executeUpdate();
                 System.out.println("Successfully added task to DB");
             }
@@ -77,10 +78,10 @@ public class SqlHandler implements TaskManager {
     }
 
     @Override
-    public void markComplete(int id) {
+    public void taskStatus(int id, boolean status) {
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(markTaskComplete, id);
-            statement.setBoolean(1, true);
+            PreparedStatement statement = conn.prepareStatement(changeTaskStatus, id);
+            statement.setBoolean(1, status);
             statement.setInt(2, id);
             statement.executeUpdate();
             System.out.println("Successfully marked task complete in DB");
@@ -96,7 +97,7 @@ public class SqlHandler implements TaskManager {
             Statement statement = conn.createStatement();
             ResultSet taskSet = statement.executeQuery(selectAllTasks);
             while(taskSet.next()){
-                Task task = new Task(taskSet.getInt(1), taskSet.getString(2));
+                Task task = new Task(taskSet.getInt(1), taskSet.getString(2), taskSet.getDate(3));
                 task.setTargetDate(taskSet.getDate(3));
                 tasks.add(task);
             }
@@ -115,7 +116,7 @@ public class SqlHandler implements TaskManager {
             statement.setInt(1, id);
             ResultSet taskSet = statement.executeQuery();
             taskSet.next();
-            task = new Task(taskSet.getInt(1), taskSet.getString(2)); // TODO: Why is this throwing an SQL Exception?
+            task = new Task(taskSet.getInt(1), taskSet.getString(2), taskSet.getDate(3));
             System.out.println("Successfully retrieved tasks: " + id);
         } catch (SQLException e) {
             e.printStackTrace();
