@@ -18,4 +18,6 @@ interface TaskManager {
     public ArrayList<Task> getAllTasks();
 
     public Task getTask(int id);
+
+    public void clearTasks();
 }

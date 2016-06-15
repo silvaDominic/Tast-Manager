@@ -23,6 +23,7 @@ public class TaskController {
 
         post("/tasks", (request, response) -> {
             try {
+                System.out.println(request.body());
                 ObjectMapper mapper = new ObjectMapper();
                 Task task = mapper.readValue(request.body(), Task.class);
                 sql.createTask(task.getId(), task.getName(), task.getTargetDate());
@@ -61,6 +62,11 @@ public class TaskController {
         delete("/tasks/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
             sql.deleteTask(id);
+            return response;
+        });
+
+        delete("/tasks", (request, response) -> {
+            sql.clearTasks();
             return response;
         });
 

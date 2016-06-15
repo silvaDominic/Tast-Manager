@@ -13,17 +13,60 @@
     </head>
 
 <body id = "body">
-    <form id = "task_form" action = "localhost:4567/taskRepository" method = "post" accept-charset = "utf-8"
-    enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate>
-        <fieldset>
-            Task:
-            <input type = "text" name = "task">
-            Finish by:
-            <input type = "text" name = target_date class = "dropdate">
-            <input type = "submit" value = "Add">
-            <input type = "button" value = "Delete">
-        </fieldset>
-    </form>
+    <div id = "main_container" class = "container">
+        <form id = "task_form" action = "/tasks" method = "post" accept-charset = "utf-8"
+        enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate name = task_form>
+            <fieldset>
+                <div class = "form_group">
+                    <label for = "task">Task:</label>
+                    <input id = "task" type = "text" name = "task">
+                </div>
+                <div class = "form_group">
+                    <label for  = "target_date">Finish by:</label>
+                    <input id = "target_date" type = "text" name = target_date class = "dropdate">
+                </div>
+                <div id = "" class = "form_group">
+                    <input type = "submit" value = "Add">
+                    <input type = "button" value = "Delete">
+                </div>
+            </fieldset>
+        </form>
+        <div id = "table_container" class = "container">
+            <!--Insert html for new tasks here-->
+            <table id = "task_table" class = "table">
+                <tr>
+                    <td>1</td>
+                    <td>This is sample task number</td>
+                    <td>06/14/16</td>
+                    <td>
+                        <form>
+                            <input type = "checkbox" name = "status" class = "checkbox">
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>This is another sample task</td>
+                    <td>06/15/16</td>
+                    <td>
+                        <form>
+                            <input type = "checkbox" name = "status" class = "checkbox">
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>This is yet another sample task number</td>
+                    <td>06/18/16</td>
+                    <td>
+                        <form>
+                            <input type = "checkbox" name = "status" class = "checkbox">
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
 </body>
 

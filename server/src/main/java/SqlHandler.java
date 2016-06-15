@@ -16,6 +16,7 @@ public class SqlHandler implements TaskManager {
     private static final String changeTaskStatus = "UPDATE tasks SET completed = (?) WHERE id = (?)";
     private static final String createTask = "INSERT INTO tasks (name, target_date, completed) VALUES (?, ?, ?)";
     private static final String deleteTask = "DELETE FROM tasks WHERE id = (?)";
+    private static final String clearTable = "SELECT * FROM TaskDB.tasks;";
 
     public SqlHandler(String dbURL, String username, String password){
         this.dbURL = dbURL;
@@ -122,5 +123,16 @@ public class SqlHandler implements TaskManager {
             e.printStackTrace();
         }
         return task;
+    }
+
+    @Override
+    public void clearTasks(){
+        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
+            Statement statement = conn.createStatement();
+            statement.executeQuery(clearTable);
+            System.out.println("Successfully cleared all tasks");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

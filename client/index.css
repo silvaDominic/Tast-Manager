@@ -1,0 +1,30 @@
+html{
+    height: 100%;
+    width: 100%;
+    font-family: 'nexa_lightregular', 'nexa_boldregular', 'geometria_lightlight', "HelveticaNeue-Light",
+                  "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#task_form{
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#task_table{
+    display: table;
+    position: relative;
+    margin: 0 auto;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+td {
+    border: 1px solid black;
+}
+
+.form_group{
+    display: inline-block;
+    position: relative;
+}
