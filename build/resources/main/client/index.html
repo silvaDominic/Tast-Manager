@@ -6,8 +6,8 @@
         <title>Task Manager</title>
 
         <script src = "http://code.jquery.com/jquery-1.12.1.min.js"></script>
-        <script src = "resources/date-dropdown-plugin/jquery-dropdate.js"></script>
-        <script src = "resources/date-dropdown-plugin/date.format.js"></script>
+        <script src = "client_resources/date-dropdown-plugin/jquery-dropdate.js"></script>
+        <script src = "client_resources/date-dropdown-plugin/date.format.js"></script>
         <script type = "text/javascript" src = "index.js"></script>
         <link rel = stylesheet type = "text/css" href = "index.css"/>
     </head>
@@ -19,13 +19,13 @@
             <fieldset>
                 <div class = "form_group">
                     <label for = "task">Task:</label>
-                    <input id = "task" type = "text" name = "task">
+                    <input id = "task" type = "text" name = "task_name" maxlength = "60" size = "60">
                 </div>
                 <div class = "form_group">
                     <label for  = "target_date">Finish by:</label>
                     <input id = "target_date" type = "text" name = target_date class = "dropdate">
                 </div>
-                <div id = "" class = "form_group">
+                <div id = "buttons" class = "form_group">
                     <input type = "submit" value = "Add">
                     <input type = "button" value = "Delete">
                 </div>
@@ -35,7 +35,6 @@
             <!--Insert html for new tasks here-->
             <table id = "task_table" class = "table">
                 <tr>
-                    <td>1</td>
                     <td>This is sample task number</td>
                     <td>06/14/16</td>
                     <td>
@@ -45,7 +44,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>1</td>
                     <td>This is another sample task</td>
                     <td>06/15/16</td>
                     <td>
@@ -55,7 +53,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>1</td>
                     <td>This is yet another sample task number</td>
                     <td>06/18/16</td>
                     <td>

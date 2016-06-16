@@ -4,19 +4,19 @@ import java.sql.Date;
  * Created by reclaimer on 6/5/16.
  */
 public class Task {
-    private int id;
+    private String id;
     private String name;
     private Date targetDate;
     private boolean isComplete;
 
-    public Task(int id, String name, Date targetDate){
+    public Task(String id, String name, Date targetDate){
         this.id = id;
         this.name = name;
         this.targetDate = targetDate; // TODO: Add to parameters figuring out format
         this.isComplete = false;
     }
 
-    public Task(int id, String name, Date targetDate, boolean status){
+    public Task(String id, String name, Date targetDate, boolean status){
         this.id = id;
         this.name = name;
         this.targetDate = targetDate; // TODO: Add to parameters figuring out format
@@ -28,7 +28,7 @@ public class Task {
     // --------------------------------------- GETTERS AND SETTERS -----------------------------------------------------
 
     // Task ID
-    public int getId(){
+    public String getId(){
         return this.id;
     }
 

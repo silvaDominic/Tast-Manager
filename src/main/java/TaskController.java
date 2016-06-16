@@ -3,8 +3,13 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.json.JSONObject;
+import spark.Spark;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import static spark.Spark.*;
 
@@ -17,25 +22,17 @@ public class TaskController {
         //Create variables for access to local host
         String dbURL = "jdbc:mysql://localhost:3306/TaskDB?autoReconnect=true&useSSL=false";
         String username = "root";
-        String password = "roo7CLAUD1tis8";
+        String password = "---";
+
+        Spark.staticFileLocation("/client");
 
         SqlHandler sql = new SqlHandler(dbURL, username, password);
 
         post("/tasks", (request, response) -> {
-            try {
-                System.out.println(request.body());
-                ObjectMapper mapper = new ObjectMapper();
-                Task task = mapper.readValue(request.body(), Task.class);
-                sql.createTask(task.getId(), task.getName(), task.getTargetDate());
-            } catch (JsonGenerationException jsonGenErr){
-                jsonGenErr.printStackTrace();
-            } catch (JsonMappingException jsonMapErr) {
-                jsonMapErr.printStackTrace();
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            JSONObject task = new JSONObject(request.body());
+            SimpleDateFormat toDate = new SimpleDateFormat("dd-MM-yyyy");
+            java.util.Date date = toDate.parse(task.get("target_date").toString()); // TODO: Why does program stop here?
+            sql.createTask(task.get("task_name").toString(), new java.sql.Date(date.getTime()));
             return response;
         });
 
@@ -56,11 +53,10 @@ public class TaskController {
                 e.printStackTrace();
             }
             return response;
-            // TODO: How should dates be handled? -- Implement PUT method
         });
 
         delete("/tasks/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(":id"));
+            String id = (request.params(":id"));
             sql.deleteTask(id);
             return response;
         });
@@ -75,12 +71,13 @@ public class TaskController {
         });
 
         get("/tasks/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(":id"));
+            String id = request.params(":id");
             return TaskToJSON(sql.getTask(id));
         });
     }
 
     private String TaskToJSON(Object obj){
+        // Initialize and instantiate Object Mapper and JSON object
         ObjectMapper mapper = new ObjectMapper();
         String json = "null";
         try {
