@@ -1,14 +1,10 @@
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.json.JSONObject;
 import spark.Spark;
 
-import java.io.IOException;
-import java.sql.Date;
+import javax.lang.model.type.NullType;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import static spark.Spark.*;
@@ -22,37 +18,50 @@ public class TaskController {
         //Create variables for access to local host
         String dbURL = "jdbc:mysql://localhost:3306/TaskDB?autoReconnect=true&useSSL=false";
         String username = "root";
-        String password = "---";
+        String password = "roo7CLAUD1tis8";
 
         Spark.staticFileLocation("/client");
 
         SqlHandler sql = new SqlHandler(dbURL, username, password);
 
         post("/tasks", (request, response) -> {
-            JSONObject task = new JSONObject(request.body());
-            SimpleDateFormat toDate = new SimpleDateFormat("dd-MM-yyyy");
-            java.util.Date date = toDate.parse(task.get("target_date").toString()); // TODO: Why does program stop here?
-            sql.createTask(task.get("task_name").toString(), new java.sql.Date(date.getTime()));
-            return response;
+            Task newTask = null;
+            try {
+                // Converts JSON string to JSON object
+                JSONObject task = new JSONObject(request.body());
+                // New date format created for parsing target_date from JSON object
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                java.util.Date date = dateFormat.parse(task.get("target_date").toString());
+                // Inserts task into DB and stores as Task object to be returned back to client WITH id
+                newTask = sql.createTask(task.get("task_name").toString(), new java.sql.Date(date.getTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            // Converts Task object to JSON object
+            return taskToJSON(newTask);
         });
 
         put("/tasks/:id", (request, response) -> {
+            Task updatedTask = null;
+            String id = "";
             try{
-                ObjectMapper mapper = new ObjectMapper();
-                Task task = mapper.readValue(request.body(), Task.class);
-                sql.changeTaskName(task.getId(), task.getName());
-                sql.changeTaskDate(task.getId(), task.getTargetDate());
-                sql.taskStatus(task.getId(), task.getStatus());
-            } catch (JsonGenerationException jsonGenErr){
-                jsonGenErr.printStackTrace();
-            } catch (JsonMappingException jsonMapErr) {
-                jsonMapErr.printStackTrace();
-            } catch (JsonParseException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+                id = (request.params(":id"));
+                // Converts JSON string to JSON object
+                JSONObject task = new JSONObject(request.body());
+                // New date format created for parsing target_date from JSON object
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                java.util.Date date = dateFormat.parse(task.get("target_date").toString());
+                // Change all possible fields in DB
+                sql.changeTaskName(id, task.get("task_name").toString());
+                sql.changeTaskDate(id, new java.sql.Date(date.getTime()));
+                sql.setTaskStatus(id, Boolean.parseBoolean(task.get("status").toString()));
+                // Used to return task object WITH id back to client
+                updatedTask = sql.getTask(id);
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
-            return response;
+            // Converts Task object to JSON object
+            return taskToJSON(updatedTask);
         });
 
         delete("/tasks/:id", (request, response) -> {
@@ -67,19 +76,20 @@ public class TaskController {
         });
 
         get("/tasks", (request, response) -> {
-            return TasklistToJSON(sql.getAllTasks());
+            return tasklistToJSON(sql.getAllTasks());
         });
 
         get("/tasks/:id", (request, response) -> {
             String id = request.params(":id");
-            return TaskToJSON(sql.getTask(id));
+            return taskToJSON(sql.getTask(id));
         });
     }
 
-    private String TaskToJSON(Object obj){
+    private String taskToJSON(Object obj){
+
         // Initialize and instantiate Object Mapper and JSON object
         ObjectMapper mapper = new ObjectMapper();
-        String json = "null";
+        String json = "";
         try {
             json = mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
@@ -88,7 +98,7 @@ public class TaskController {
         return json;
     }
 
-    private ArrayList TasklistToJSON(ArrayList list){
+    private ArrayList tasklistToJSON(ArrayList list){
         // Initialize and instantiate Object Mapper and JSON object
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<String> jsonString = new ArrayList<String>();

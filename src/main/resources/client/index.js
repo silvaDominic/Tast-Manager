@@ -4,9 +4,9 @@ $(document).ready(function() {
     });
 
     var request;
-/*        function addTask(task){
-
-    }*/
+    function addTask(task){
+        $
+    }
 
     $.fn.serializedData = function()
     {
@@ -65,7 +65,6 @@ $(document).ready(function() {
             console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
         }).always(function(){
             $inputs.prop("disabled", false);;
-        // TODO: What's the format of the date when sent via JSON?
         });
     });
 });

@@ -67,11 +67,13 @@ public class SqlHandler implements TaskManager {
     }
 
     @Override
-    public void createTask(String newTask, Date targetDate) {
+    public Task createTask(String newTask, Date targetDate) {
+        String id = "";
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             if (conn != null) {
                 PreparedStatement statement = conn.prepareStatement(createTask);
-                statement.setString(1, UUID.randomUUID().toString());
+                id = UUID.randomUUID().toString();
+                statement.setString(1, id);
                 statement.setString(2, newTask);
                 statement.setDate(3, new java.sql.Date(calendar.getTime().getTime()));
                 statement.setDate(4, targetDate);
@@ -82,10 +84,11 @@ public class SqlHandler implements TaskManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return getTask(id);
     }
 
     @Override
-    public void taskStatus(String id, boolean status) {
+    public void setTaskStatus(String id, boolean status) {
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             PreparedStatement statement = conn.prepareStatement(changeTaskStatus);
             statement.setBoolean(1, status);
