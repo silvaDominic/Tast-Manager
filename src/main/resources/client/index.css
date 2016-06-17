@@ -12,18 +12,6 @@ html{
     transform: translateX(-50%);
 }
 
-#task_table{
-    display: table;
-    position: relative;
-    margin: 0 auto;
-    border-collapse: collapse;
-    text-align: center;
-}
-
-td {
-    border: 1px solid black;
-}
-
 .form_group{
     display: inline-block;
     position: relative;

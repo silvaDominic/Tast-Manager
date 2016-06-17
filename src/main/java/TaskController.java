@@ -18,7 +18,7 @@ public class TaskController {
         //Create variables for access to local host
         String dbURL = "jdbc:mysql://localhost:3306/TaskDB?autoReconnect=true&useSSL=false";
         String username = "root";
-        String password = "roo7CLAUD1tis8";
+        String password = "---";
 
         Spark.staticFileLocation("/client");
 
@@ -116,3 +116,5 @@ public class TaskController {
         return jsonString;
     }
 }
+
+// TODO: Make handlers for Http methods
