@@ -6,18 +6,19 @@ $(document).ready(function() {
     // Cache fields
     var $tasks = $('#tasks');
     var $target_date = $('#target_date');
-    var taskTemplate = "<li>{{name}} Finish by: {{targetDate}} <button data-id = '{{id}}' class = 'remove'>X</button<li>";
+    var taskTemplate = "<li>{{name}} Finish by: {{targetDate}} <button data-id = '{{id}}' class = 'remove'>X</button> <input data-id = '{{id}}' class = 'status' type = 'checkbox'></li>";
 
     // Uses the mustache template engine to dynamically insert tasks into DOM
     function addTask(task){
         $tasks.append(Mustache.render(taskTemplate, task));
     }
 
-    // Constructs form data into JSON
+    // Serializes and constructs form data into JSON object
     $.fn.serializedData = function()
     {
         var o = {};
         var a = this.serializeArray();
+
         $.each(a, function() {
             if (o[this.name] !== undefined) {
                 if (!o[this.name].push) {
@@ -28,6 +29,7 @@ $(document).ready(function() {
                 o[this.name] = this.value || '';
             }
         });
+
         return o;
     };
 
@@ -54,6 +56,13 @@ $(document).ready(function() {
     $("#task_form").submit(function(event){
 
         var request;
+        var task_input = document.forms['task_form']['task'].value;
+
+        // Check for blank form
+        if (task_input == null || task_input == ""){
+            alert("No task? Then I guess you don't need me!");
+            return false;
+        }
 
         // Prevent form from submitting from browser
         event.preventDefault();
@@ -114,4 +123,27 @@ $(document).ready(function() {
           console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
       });
     });
+
+    $tasks.delegate('.status', 'click', function(){
+
+        var $status = $(this);
+        console.log($status.serializedData());
+        var $JSON = JSON.stringify($status.serializedData());
+        console.log($JSON);
+
+        $.ajax({
+            url: '/tasks/' + $(this).attr('data-id'),
+            type: 'PUT',
+            data: $JSON
+        }).done(function(response, textStatus, jqXHR){
+            console.log("Put successful.");
+            console.log("Response: " + response);
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            console.log("Error.");
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        });
+    })
 });
