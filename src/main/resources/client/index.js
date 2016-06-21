@@ -6,11 +6,12 @@ $(document).ready(function() {
     // Cache fields
     var $tasks = $('#tasks');
     var $target_date = $('#target_date');
-    var taskTemplate = "<li>{{name}} Finish by: {{targetDate}} <button data-id = '{{id}}' class = 'remove'>X</button> <input data-id = '{{id}}' class = 'status' type = 'checkbox'></li>";
 
     // Uses the mustache template engine to dynamically insert tasks into DOM
-    function addTask(task){
-        $tasks.append(Mustache.render(taskTemplate, task));
+    function insertTask(data){
+        $.Mustache.load('templates/tasks.html', function() {
+            $('#tasks').mustache('main_form', data);
+        });
     }
 
     // Serializes and constructs form data into JSON object
@@ -39,8 +40,8 @@ $(document).ready(function() {
         type: 'GET'
     }).done(function(response, textStatus, jqXHR){
         $.each($.parseJSON(response), function(i, task){
-            addTask(task);
-        });
+            insertTask(task);
+            });
         console.log("Get successful.");
         console.log("Response: " + response);
         console.log("Text Status: " + textStatus);
@@ -49,7 +50,7 @@ $(document).ready(function() {
         console.log("Error.");
         console.log("Text Status: " + textStatus);
         console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-    })
+    });
 
     // Handler for submitting form data
     // Binds submit event from form
@@ -87,7 +88,7 @@ $(document).ready(function() {
             type: $form.attr('method'),
             data: $JSON
         }).done(function(response, textStatus, jqXHR){
-            addTask($.parseJSON(response));
+            insertTask($.parseJSON(response));
             console.log("Post successful.");
             console.log("Response: " + response);
             console.log("Text Status: " + textStatus);
@@ -145,5 +146,5 @@ $(document).ready(function() {
             console.log("Text Status: " + textStatus);
             console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
         });
-    })
+    });
 });

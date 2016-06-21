@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html lang = "en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Task Manager</title>
+
+    <script src = "http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src = "../client_resources/jquery-dropdate.js"></script>
+    <script src = "../client_resources/date.format.js"></script>
+    <script src = "../client_resources/mustache.min.js"></script>
+    <script src = "../client_resources/jquery.mustache.js"></script>
+    <script type = "text/javascript" src = "../index.js"></script>
+    <link rel = stylesheet type = "text/css" href = "../index.css"/>
+</head>
+
+<body>
+    <script id = "main_form" type = "html/text">
+        <li>
+            {{name}} By: {{targetDate}}
+            <button data-id = '{{id}}' class = 'remove'>X</button>
+            <form id = 'task_form' action = '/tasks' method = 'put' accept-charset = 'utf-8'
+             enctype='application/x-www-form-urlencoded' autocomplete='off' name = task_form novalidate>
+                <input data-id = '{{id}}' class = 'status' type = 'checkbox'>
+            </form>
+        </li>
+    </script>
+</body>
+
+</html>
