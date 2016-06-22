@@ -5,7 +5,7 @@ import java.util.ArrayList;
  * Created by reclaimer on 6/6/16.
  */
 interface TaskManager {
-    public void changeTaskName(String id, String newName);
+    public void changeTaskDescription(String id, String newDescription);
 
     public void changeTaskDate(String id, Date newDate);
 

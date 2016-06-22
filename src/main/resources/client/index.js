@@ -1,38 +1,65 @@
 $(document).ready(function() {
     $('.dropdate').dropdate({
-        dateFormat: 'mm/dd/yyyy'
+        dateFormat: 'mm-dd-yyyy'
     });
 
     // Cache fields
     var $tasks = $('#tasks');
     var $target_date = $('#target_date');
+    var $task_container = $('#task_container')
 
-    // Uses the mustache template engine to dynamically insert tasks into DOM
-    function insertTask(data){
-        $.Mustache.load('templates/tasks.html', function() {
-            $('#tasks').mustache('main_form', data);
+// ------------------------------------------- AJAX REQUESTS -----------------------------------------------------------
+
+    // Handler for submitting form data
+    // Binds submit event from form
+    $("#task_form").submit(function(event){
+
+        var request;
+        var task_input = document.forms['task_form']['task'].value;
+
+        // Check for blank form
+        if (task_input == null || task_input == ""){
+            alert("No task? Then I guess you don't need me!");
+            return false;
+        }
+
+        // Prevent form from submitting from browser
+        event.preventDefault();
+
+        // Serialize form data
+        var $form = $(this);
+        var taskToPost = JSON.stringify($form.serializeData());
+        console.log(taskToPost);
+
+        // Aborts any pending requests
+        if (request) {
+            request.abort();
+        }
+        // Selects and caches input field
+        var $inputs = $form.find("input");
+
+        // Briefly disables input fields during duration of AJAX request
+        $inputs.prop("disabled", true);
+
+        // AJAX request for posting new task
+        $.ajax({
+            url: $form.attr('action'),
+            type: $form.attr('method'),
+            data: taskToPost
+        }).done(function(response, textStatus, jqXHR){
+            insertTask($.parseJSON(response));
+            console.log("Post successful.");
+            console.log("Response: " + response);
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            console.log("Error.");
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        }).always(function(){
+            $inputs.prop("disabled", false);;
         });
-    }
-
-    // Serializes and constructs form data into JSON object
-    $.fn.serializedData = function()
-    {
-        var o = {};
-        var a = this.serializeArray();
-
-        $.each(a, function() {
-            if (o[this.name] !== undefined) {
-                if (!o[this.name].push) {
-                    o[this.name] = [o[this.name]];
-                }
-                o[this.name].push(this.value || '');
-            } else {
-                o[this.name] = this.value || '';
-            }
-        });
-
-        return o;
-    };
+    });
 
     // AJAX call for getting current tasks
     $.ajax({
@@ -52,60 +79,11 @@ $(document).ready(function() {
         console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
     });
 
-    // Handler for submitting form data
-    // Binds submit event from form
-    $("#task_form").submit(function(event){
-
-        var request;
-        var task_input = document.forms['task_form']['task'].value;
-
-        // Check for blank form
-        if (task_input == null || task_input == ""){
-            alert("No task? Then I guess you don't need me!");
-            return false;
-        }
-
-        // Prevent form from submitting from browser
-        event.preventDefault();
-
-        // Serialize form data
-        $form = $(this);
-        $JSON = JSON.stringify($form.serializedData());
-
-        // Aborts any pending requests
-        if (request) {
-            request.abort();
-        }
-        // Selects and caches input field
-        var $inputs = $form.find("input");
-
-        // Briefly disables input fields during duration of AJAX request
-        $inputs.prop("disabled", true);
-
-        // AJAX request for posting new task
-        $.ajax({
-            url: $form.attr('action'),
-            type: $form.attr('method'),
-            data: $JSON
-        }).done(function(response, textStatus, jqXHR){
-            insertTask($.parseJSON(response));
-            console.log("Post successful.");
-            console.log("Response: " + response);
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            console.log("Error.");
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        }).always(function(){
-            $inputs.prop("disabled", false);;
-        });
-    });
-
     // Handler for deleting selected tasks
     $tasks.delegate('.remove', 'click', function() {
         // Cache task to delete <li>
         var $taskToDelete = $(this).closest('li');
+        console.log($taskToDelete);
 
         // AJAX request for deleting existing task
         $.ajax({
@@ -125,18 +103,21 @@ $(document).ready(function() {
       });
     });
 
+    // Updates checkboxes
     $tasks.delegate('.status', 'click', function(){
-
-        var $status = $(this);
-        console.log($status.serializedData());
-        var $JSON = JSON.stringify($status.serializedData());
-        console.log($JSON);
+        var $task_description = $(this).closest('.update_form', '.task_description'); //TODO: Why is this selection the wrong element?
+        console.log($task_description);
+        $task_description.prop('disabled', false);
+        var $checkedTask = $(this).closest('form', '.update_form');
+        var taskToUpdate = JSON.stringify($checkedTask.serializeData());
+        console.log(taskToUpdate);
 
         $.ajax({
             url: '/tasks/' + $(this).attr('data-id'),
             type: 'PUT',
-            data: $JSON
+            data: taskToUpdate
         }).done(function(response, textStatus, jqXHR){
+
             console.log("Put successful.");
             console.log("Response: " + response);
             console.log("Text Status: " + textStatus);
@@ -147,4 +128,79 @@ $(document).ready(function() {
             console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
         });
     });
+
+    //TODO: Handle edit button
+
+
+// ---------------------------------------- HELPER FUNCTIONS -----------------------------------------------------------
+
+    // Uses the mustache template engine to dynamically insert tasks into DOM
+    function insertTask(data){
+        $.Mustache.load('templates/tasks.html', function() {
+            $('#tasks').mustache('main_form', data);
+        });
+    }
+
+    // Serializes and constructs form data into JSON object
+    $.fn.serializeData = function()
+    {
+        var o = {};
+        var a = this.serializeArray({ checkboxesAsBools: true });
+        console.log(a);
+
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+    (function ($) {
+
+         $.fn.serialize = function (options) {
+             return $.param(this.serializeArray(options));
+         };
+
+         $.fn.serializeArray = function (options) {
+             var o = $.extend({
+             checkboxesAsBools: false
+         }, options || {});
+
+         var rselectTextarea = /select|textarea/i;
+         var rinput = /text|hidden|password|search/i;
+
+         return this.map(function () {
+             return this.elements ? $.makeArray(this.elements) : this;
+         })
+         .filter(function () {
+             return this.name && !this.disabled &&
+                 (this.checked
+                 || (o.checkboxesAsBools && this.type === 'checkbox')
+                 || rselectTextarea.test(this.nodeName)
+                 || rinput.test(this.type));
+             })
+             .map(function (i, elem) {
+                 var val = $(this).val();
+                 return val == null ?
+                 null :
+                 $.isArray(val) ?
+                 $.map(val, function (val, i) {
+                     return { name: elem.name, value: val };
+                 }) :
+                 {
+                     name: elem.name,
+                     value: (o.checkboxesAsBools && this.type === 'checkbox') ? //moar ternaries!
+                            (this.checked ? 'true' : 'false') :
+                            val
+                 };
+             }).get();
+         };
+
+    })(jQuery);
 });

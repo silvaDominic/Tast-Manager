@@ -15,15 +15,15 @@
 <body id = "body">
     <div id = "main_container" class = "container">
         <form id = "task_form" action = "/tasks" method = "post" accept-charset = "utf-8"
-        enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate name = task_form>
+        enctype="application/x-www-form-urlencoded" autocomplete="off" novalidate description = task_form>
             <fieldset>
                 <div class = "form_group">
                     <label for = "task">Task:</label>
-                    <input id = "task" type = "text" name = "task_name" maxlength = "60" size = "60">
+                    <input id = "task" type = "text" description = "task_name" maxlength = "60" size = "60">
                 </div>
                 <div class = "form_group">
                     <label for  = "target_date">Finish by:</label>
-                    <input id = "target_date" type = "text" name = target_date class = "dropdate">
+                    <input id = "target_date" type = "text" description = target_date class = "dropdate">
                 </div>
                 <div id = "buttons" class = "form_group">
                     <input type = "submit" value = "Add">
@@ -39,7 +39,7 @@
                     <td>06/14/16</td>
                     <td>
                         <form>
-                            <input type = "checkbox" name = "status" class = "checkbox">
+                            <input type = "checkbox" description = "status" class = "checkbox">
                         </form>
                     </td>
                 </tr>
@@ -48,7 +48,7 @@
                     <td>06/15/16</td>
                     <td>
                         <form>
-                            <input type = "checkbox" name = "status" class = "checkbox">
+                            <input type = "checkbox" description = "status" class = "checkbox">
                         </form>
                     </td>
                 </tr>
@@ -57,7 +57,7 @@
                     <td>06/18/16</td>
                     <td>
                         <form>
-                            <input type = "checkbox" name = "status" class = "checkbox">
+                            <input type = "checkbox" description = "status" class = "checkbox">
                         </form>
                     </td>
                 </tr>

@@ -8,21 +8,39 @@
     <script src = "http://code.jquery.com/jquery-1.12.1.min.js"></script>
     <script src = "../client_resources/jquery-dropdate.js"></script>
     <script src = "../client_resources/date.format.js"></script>
-    <script src = "../client_resources/mustache.min.js"></script>
-    <script src = "../client_resources/jquery.mustache.js"></script>
     <script type = "text/javascript" src = "../index.js"></script>
-    <link rel = stylesheet type = "text/css" href = "../index.css"/>
 </head>
 
 <body>
     <script id = "main_form" type = "html/text">
         <li>
-            {{name}} By: {{targetDate}}
-            <button data-id = '{{id}}' class = 'remove'>X</button>
-            <form id = 'task_form' action = '/tasks' method = 'put' accept-charset = 'utf-8'
-             enctype='application/x-www-form-urlencoded' autocomplete='off' name = task_form novalidate>
-                <input data-id = '{{id}}' class = 'status' type = 'checkbox'>
-            </form>
+            <div class = "task_container">
+                <div class = "update_task">
+                <form class = "update_form" action = "/tasks" method = "post" accept-charset = "utf-8"
+                enctype="application/x-www-form-urlencoded" autocomplete = "off" name = task_form novalidate>
+                    <fieldset>
+                        <div class = "form_group description">
+                            <input id = "task" class = "task_description" type = "text" name = "task_description" maxlength = "60"
+                            size = "60" value = "{{description}}" disabled>
+                        </div>
+
+                        <div class = "form_group date">
+                            <label for  = "target_date">Finish by:</label>
+                            <input id = "target_date" type = "text" name = target_date class = "dropdate" value = {{targetDate}}>
+                        </div>
+
+                        <div class = "form_group checkbox">
+                            <input data-id = '{{id}}' class = 'status' name = 'status' type = 'checkbox'>
+                        </div>
+
+                        <div class = "form_group button">
+                            <input type = "submit" value = "Update">
+                        </div>
+                    </fieldset>
+                </form>
+                <button data-id = '{{id}}' class = 'remove'>X</button>
+                </div>
+            </div>
         </li>
     </script>
 </body>

@@ -3,7 +3,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import spark.Spark;
 
-import javax.lang.model.type.NullType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,10 +29,10 @@ public class TaskController {
                 // Converts JSON string to JSON object
                 JSONObject task = new JSONObject(request.body());
                 // New date format created for parsing target_date from JSON object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 java.util.Date date = dateFormat.parse(task.get("target_date").toString());
                 // Inserts task into DB and stores as Task object to be returned back to client WITH id
-                newTask = sql.createTask(task.get("task_name").toString(), new java.sql.Date(date.getTime()));
+                newTask = sql.createTask(task.get("task_description").toString(), new java.sql.Date(date.getTime()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -41,6 +40,7 @@ public class TaskController {
             return taskToJSON(newTask);
         });
 
+        // TODO: Handle individual parts of the json string
         put("/tasks/:id", (request, response) -> {
             Task updatedTask = null;
             String id = "";
@@ -49,10 +49,10 @@ public class TaskController {
                 // Converts JSON string to JSON object
                 JSONObject task = new JSONObject(request.body());
                 // New date format created for parsing target_date from JSON object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 java.util.Date date = dateFormat.parse(task.get("target_date").toString());
                 // Change all possible fields in DB
-                sql.changeTaskName(id, task.get("task_name").toString());
+                sql.changeTaskDescription(id, task.get("task_description").toString());
                 sql.changeTaskDate(id, new java.sql.Date(date.getTime()));
                 sql.setTaskStatus(id, Boolean.parseBoolean(task.get("status").toString()));
                 // Used to return task object WITH id back to client

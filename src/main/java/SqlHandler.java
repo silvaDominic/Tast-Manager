@@ -14,10 +14,10 @@ public class SqlHandler implements TaskManager {
     private Calendar calendar;
     private static final String selectTask = "SELECT * FROM tasks WHERE id = (?)";
     private static final String selectAllTasks = "SELECT * FROM tasks";
-    private static final String changeTaskName = "UPDATE tasks SET name = (?) WHERE id = (?)";
+    private static final String changeTaskDescription = "UPDATE tasks SET description = (?) WHERE id = (?)";
     private static final String changeTargetDate = "UPDATE tasks SET target_date = (?) WHERE id = (?)";
     private static final String changeTaskStatus = "UPDATE tasks SET completed = (?) WHERE id = (?)";
-    private static final String createTask = "INSERT INTO tasks (id, name, date_created, target_date, completed) VALUES (?, ?, ?, ?, ?)";
+    private static final String createTask = "INSERT INTO tasks (id, description, date_created, target_date, completed) VALUES (?, ?, ?, ?, ?)";
     private static final String deleteTask = "DELETE FROM tasks WHERE id = (?)";
     private static final String clearTable = "SELECT * FROM TaskDB.tasks;";
 
@@ -29,10 +29,11 @@ public class SqlHandler implements TaskManager {
     }
 
     @Override
-    public void changeTaskName(String id, String newName) {
+    public void changeTaskDescription(String id, String newDescription) {
+        if (newDescription == null) {return;}
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(changeTaskName);
-            statement.setString(1, newName);
+            PreparedStatement statement = conn.prepareStatement(changeTaskDescription);
+            statement.setString(1, newDescription);
             statement.setString(2, id);
             statement.executeUpdate();
             System.out.println("Successfully changed name of task in DB");
@@ -43,6 +44,7 @@ public class SqlHandler implements TaskManager {
 
     @Override
     public void changeTaskDate(String id, Date newDate) {
+        if (newDate == null) {return;}
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             PreparedStatement statement = conn.prepareStatement(changeTargetDate);
             statement.setDate(1, newDate);

@@ -9,7 +9,7 @@
     defaults = {
 		minYear:new Date().getFullYear(),
 		maxYear:new Date().getFullYear() + 1,
-		format:'yyyy/mm/dd',
+		format:'yyyy-mm-dd',
 		className:'dropdate-select',
 		defaultDate:new Date()
     };

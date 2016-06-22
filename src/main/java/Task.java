@@ -5,20 +5,20 @@ import java.sql.Date;
  */
 public class Task {
     private String id;
-    private String name;
+    private String description;
     private Date targetDate;
     private boolean isComplete;
 
-    public Task(String id, String name, Date targetDate){
+    public Task(String id, String description, Date targetDate){
         this.id = id;
-        this.name = name;
+        this.description = description;
         this.targetDate = targetDate; // TODO: Add to parameters figuring out format
         this.isComplete = false;
     }
 
-    public Task(String id, String name, Date targetDate, boolean status){
+    public Task(String id, String description, Date targetDate, boolean status){
         this.id = id;
-        this.name = name;
+        this.description = description;
         this.targetDate = targetDate; // TODO: Add to parameters figuring out format
         this.isComplete = status;
     }
@@ -32,13 +32,13 @@ public class Task {
         return this.id;
     }
 
-    // Task name
-    public String getName(){
-        return this.name;
+    // Task description
+    public String getDescription(){
+        return this.description;
     }
 
-    public void setName(String newTaskName){
-        this.name = newTaskName;
+    public void setDescription(String newTaskName){
+        this.description = newTaskName;
     }
 
     // Target date
