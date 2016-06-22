@@ -1,89 +1,113 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
+import spark.Request;
+import spark.Response;
 import spark.Spark;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
 import static spark.Spark.*;
 
 /**
  * Created by reclaimer on 6/12/16.
  */
 public class TaskController {
+    //Create variables for access to local host
+    private String dbURL = "jdbc:mysql://localhost:3306/TaskDB?autoReconnect=true&useSSL=false";;
+    private String username = "root";
+    private String password = "roo7CLAUD1tis8";
+    private SqlHandler sqlHandler;
 
-    public TaskController(){
-        //Create variables for access to local host
-        String dbURL = "jdbc:mysql://localhost:3306/TaskDB?autoReconnect=true&useSSL=false";
-        String username = "root";
-        String password = "roo7CLAUD1tis8";
 
+    public TaskController(String dbURL, String username, String password){
+        this.dbURL = dbURL;
+        this.username = username;
+        this.password = password;
+        this.sqlHandler = new SqlHandler(dbURL, username, password);
         Spark.staticFileLocation("/client");
 
-        SqlHandler sql = new SqlHandler(dbURL, username, password);
+        post("/tasks", (request, response) -> postHandler(request));
 
-        post("/tasks", (request, response) -> {
-            Task newTask = null;
-            try {
-                // Converts JSON string to JSON object
-                JSONObject task = new JSONObject(request.body());
-                // New date format created for parsing target_date from JSON object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                java.util.Date date = dateFormat.parse(task.get("target_date").toString());
-                // Inserts task into DB and stores as Task object to be returned back to client WITH id
-                newTask = sql.createTask(task.get("task_description").toString(), new java.sql.Date(date.getTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            // Converts Task object to JSON object
-            return taskToJSON(newTask);
-        });
+        put("/tasks/:id", (request, response) -> putHandler(request));
 
-        // TODO: Handle individual parts of the json string
-        put("/tasks/:id", (request, response) -> {
-            Task updatedTask = null;
-            String id = "";
-            try{
-                id = (request.params(":id"));
-                // Converts JSON string to JSON object
-                JSONObject task = new JSONObject(request.body());
-                // New date format created for parsing target_date from JSON object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                java.util.Date date = dateFormat.parse(task.get("target_date").toString());
-                // Change all possible fields in DB
-                sql.changeTaskDescription(id, task.get("task_description").toString());
-                sql.changeTaskDate(id, new java.sql.Date(date.getTime()));
-                sql.setTaskStatus(id, Boolean.parseBoolean(task.get("status").toString()));
-                // Used to return task object WITH id back to client
-                updatedTask = sql.getTask(id);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            // Converts Task object to JSON object
-            return taskToJSON(updatedTask);
-        });
+        // TODO: Does this need a helper method?
+        get("/tasks", (request, response) -> tasklistToJSON(sqlHandler.getAllTasks()));
+
+        get("/tasks/:id", (request, response) -> getHandler(request));
 
         delete("/tasks/:id", (request, response) -> {
-            String id = (request.params(":id"));
-            sql.deleteTask(id);
+            deleteHandler(request);
             return response;
         });
 
+        // TODO: Does this need a helper method?
         delete("/tasks", (request, response) -> {
-            sql.clearTasks();
+            sqlHandler.clearTasks();
             return response;
-        });
-
-        get("/tasks", (request, response) -> {
-            return tasklistToJSON(sql.getAllTasks());
-        });
-
-        get("/tasks/:id", (request, response) -> {
-            String id = request.params(":id");
-            return taskToJSON(sql.getTask(id));
         });
     }
+
+    // ------------------------------------------ HTTP HANDLERS --------------------------------------------------------
+
+    private String postHandler(Request request){
+        Task newTask = null;
+        try {
+            // Converts JSON string to JSON object
+            JSONObject task = new JSONObject(request.body());
+            // New date format created for parsing target_date from JSON object
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = dateFormat.parse(task.get("target_date").toString());
+            // Inserts task into DB and stores as Task object to be returned back to client WITH id
+            newTask = sqlHandler.createTask(task.get("task_description").toString(), new java.sql.Date(date.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        // Converts Task object to JSON object
+        return taskToJSON(newTask);
+    }
+
+    private String putHandler(Request request){
+        String id = (request.params(":id"));
+        Task updatedTask = null;
+        try{
+            // Converts JSON string to JSON object
+            JSONObject task = new JSONObject(request.body());
+            if (task.has("task_description")){
+                sqlHandler.changeTaskDescription(id, task.get("task_description").toString());
+            }
+            if (task.has("target_date")){
+                // New date format created for parsing target_date from JSON object
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = dateFormat.parse(task.get("target_date").toString());
+                sqlHandler.changeTaskDate(id, new java.sql.Date(date.getTime()));
+            }
+            if (task.has("status")){
+                sqlHandler.setTaskStatus(id, Boolean.parseBoolean(task.get("status").toString()));
+            }
+            // Used to return task object WITH id back to client
+            updatedTask = sqlHandler.getTask(id);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        // Converts Task object to JSON object
+        return taskToJSON(updatedTask);
+    }
+
+    private void deleteHandler(Request request){
+        String id = (request.params(":id"));
+        sqlHandler.deleteTask(id);
+    }
+
+    private String getHandler(Request request){
+        String id = request.params(":id");
+        return taskToJSON(sqlHandler.getTask(id));
+    }
+
+    // ------------------------------------------ HELPER FUNCTIONS -----------------------------------------------------
 
     private String taskToJSON(Object obj){
 

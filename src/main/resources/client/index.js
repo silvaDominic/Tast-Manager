@@ -105,9 +105,9 @@ $(document).ready(function() {
 
     // Updates checkboxes
     $tasks.delegate('.status', 'click', function(){
-        var $task_description = $(this).closest('.update_form', '.task_description'); //TODO: Why is this selection the wrong element?
+/*        var $task_description = $(this).closest('.update_form', '.task_description'); //TODO: Why is this selection the wrong element?
         console.log($task_description);
-        $task_description.prop('disabled', false);
+        $task_description.prop('disabled', false);*/
         var $checkedTask = $(this).closest('form', '.update_form');
         var taskToUpdate = JSON.stringify($checkedTask.serializeData());
         console.log(taskToUpdate);

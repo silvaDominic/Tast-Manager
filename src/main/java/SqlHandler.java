@@ -12,14 +12,14 @@ public class SqlHandler implements TaskManager {
     private String username;
     private String password;
     private Calendar calendar;
-    private static final String selectTask = "SELECT * FROM tasks WHERE id = (?)";
-    private static final String selectAllTasks = "SELECT * FROM tasks";
-    private static final String changeTaskDescription = "UPDATE tasks SET description = (?) WHERE id = (?)";
-    private static final String changeTargetDate = "UPDATE tasks SET target_date = (?) WHERE id = (?)";
-    private static final String changeTaskStatus = "UPDATE tasks SET completed = (?) WHERE id = (?)";
-    private static final String createTask = "INSERT INTO tasks (id, description, date_created, target_date, completed) VALUES (?, ?, ?, ?, ?)";
-    private static final String deleteTask = "DELETE FROM tasks WHERE id = (?)";
-    private static final String clearTable = "SELECT * FROM TaskDB.tasks;";
+    private static final String SELECT_TASK = "SELECT * FROM tasks WHERE id = (?)";
+    private static final String SELECT_ALL_TASKS = "SELECT * FROM tasks";
+    private static final String CHANGE_TASK_DESCRIPTION = "UPDATE tasks SET description = (?) WHERE id = (?)";
+    private static final String CHANGE_TARGET_DATE = "UPDATE tasks SET target_date = (?) WHERE id = (?)";
+    private static final String CHANGE_TASK_STATUS = "UPDATE tasks SET completed = (?) WHERE id = (?)";
+    private static final String CREATE_TASK = "INSERT INTO tasks (id, description, date_created, target_date, completed) VALUES (?, ?, ?, ?, ?)";
+    private static final String DELETE_TASK = "DELETE FROM tasks WHERE id = (?)";
+    private static final String CLEAR_TABLE = "SELECT * FROM TaskDB.tasks;";
 
     public SqlHandler(String dbURL, String username, String password){
         this.dbURL = dbURL;
@@ -32,7 +32,7 @@ public class SqlHandler implements TaskManager {
     public void changeTaskDescription(String id, String newDescription) {
         if (newDescription == null) {return;}
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(changeTaskDescription);
+            PreparedStatement statement = conn.prepareStatement(CHANGE_TASK_DESCRIPTION);
             statement.setString(1, newDescription);
             statement.setString(2, id);
             statement.executeUpdate();
@@ -46,7 +46,7 @@ public class SqlHandler implements TaskManager {
     public void changeTaskDate(String id, Date newDate) {
         if (newDate == null) {return;}
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(changeTargetDate);
+            PreparedStatement statement = conn.prepareStatement(CHANGE_TARGET_DATE);
             statement.setDate(1, newDate);
             statement.setString(2, id);
             statement.executeUpdate();
@@ -59,7 +59,7 @@ public class SqlHandler implements TaskManager {
     @Override
     public void deleteTask(String id) {
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(deleteTask);
+            PreparedStatement statement = conn.prepareStatement(DELETE_TASK);
             statement.setString(1, id);
             statement.executeUpdate();
             System.out.println("Successfully deleted task from DB");
@@ -73,7 +73,7 @@ public class SqlHandler implements TaskManager {
         String id = "";
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             if (conn != null) {
-                PreparedStatement statement = conn.prepareStatement(createTask);
+                PreparedStatement statement = conn.prepareStatement(CREATE_TASK);
                 id = UUID.randomUUID().toString();
                 statement.setString(1, id);
                 statement.setString(2, newTask);
@@ -92,7 +92,7 @@ public class SqlHandler implements TaskManager {
     @Override
     public void setTaskStatus(String id, boolean status) {
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(changeTaskStatus);
+            PreparedStatement statement = conn.prepareStatement(CHANGE_TASK_STATUS);
             statement.setBoolean(1, status);
             statement.setString(2, id);
             statement.executeUpdate();
@@ -107,7 +107,7 @@ public class SqlHandler implements TaskManager {
         ArrayList<Task> tasks = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             Statement statement = conn.createStatement();
-            ResultSet taskSet = statement.executeQuery(selectAllTasks);
+            ResultSet taskSet = statement.executeQuery(SELECT_ALL_TASKS);
             while(taskSet.next()){
                 Task task = new Task(taskSet.getString(1), taskSet.getString(2), taskSet.getDate(3));
                 task.setTargetDate(taskSet.getDate(3));
@@ -124,7 +124,7 @@ public class SqlHandler implements TaskManager {
     public Task getTask(String id){
         Task task = null;
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(selectTask);
+            PreparedStatement statement = conn.prepareStatement(SELECT_TASK);
             statement.setString(1, id);
             ResultSet taskSet = statement.executeQuery();
             taskSet.next();
@@ -140,7 +140,7 @@ public class SqlHandler implements TaskManager {
     public void clearTasks(){
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             Statement statement = conn.createStatement();
-            statement.executeQuery(clearTable);
+            statement.executeQuery(CLEAR_TABLE);
             System.out.println("Successfully cleared all tasks");
         } catch (SQLException e) {
             e.printStackTrace();
