@@ -29,6 +29,84 @@ public class SqlHandler implements TaskManager {
     }
 
     @Override
+    public Task createTask(String newTask, Date targetDate) {
+        String id = "";
+        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
+            if (conn != null) {
+                PreparedStatement statement = conn.prepareStatement(CREATE_TASK);
+                id = UUID.randomUUID().toString();
+                statement.setString(1, id);
+                statement.setString(2, newTask);
+                statement.setDate(3, new java.sql.Date(calendar.getTime().getTime()));
+                statement.setDate(4, targetDate);
+                statement.setBoolean(5, false);
+                statement.executeUpdate();
+                System.out.println("Successfully added task to DB");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return getTask(id);
+    }
+
+    @Override
+    public void deleteTask(String id) {
+        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
+            PreparedStatement statement = conn.prepareStatement(DELETE_TASK);
+            statement.setString(1, id);
+            statement.executeUpdate();
+            System.out.println("Successfully deleted task from DB");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void clearTasks(){
+        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
+            Statement statement = conn.createStatement();
+            statement.executeQuery(CLEAR_TABLE);
+            System.out.println("Successfully cleared all tasks");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Task getTask(String id){
+        Task task = null;
+        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
+            PreparedStatement statement = conn.prepareStatement(SELECT_TASK);
+            statement.setString(1, id);
+            ResultSet taskSet = statement.executeQuery();
+            taskSet.next();
+            task = new Task(taskSet.getString(1), taskSet.getString(2), taskSet.getDate(4), taskSet.getBoolean(5));
+            System.out.println("Successfully retrieved tasks: " + id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return task;
+    }
+
+    @Override
+    public ArrayList<Task> getAllTasks(){
+        ArrayList<Task> tasks = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
+            Statement statement = conn.createStatement();
+            ResultSet taskSet = statement.executeQuery(SELECT_ALL_TASKS);
+            while(taskSet.next()){
+                Task task = new Task(taskSet.getString(1), taskSet.getString(2), taskSet.getDate(4), taskSet.getBoolean(5));
+                task.setTargetDate(taskSet.getDate(3));
+                tasks.add(task);
+            }
+            System.out.println("Successfully retrieved all tasks");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tasks;
+    }
+
+    @Override
     public void changeTaskDescription(String id, String newDescription) {
         if (newDescription == null) {return;}
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
@@ -57,39 +135,6 @@ public class SqlHandler implements TaskManager {
     }
 
     @Override
-    public void deleteTask(String id) {
-        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(DELETE_TASK);
-            statement.setString(1, id);
-            statement.executeUpdate();
-            System.out.println("Successfully deleted task from DB");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public Task createTask(String newTask, Date targetDate) {
-        String id = "";
-        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            if (conn != null) {
-                PreparedStatement statement = conn.prepareStatement(CREATE_TASK);
-                id = UUID.randomUUID().toString();
-                statement.setString(1, id);
-                statement.setString(2, newTask);
-                statement.setDate(3, new java.sql.Date(calendar.getTime().getTime()));
-                statement.setDate(4, targetDate);
-                statement.setBoolean(5, false);
-                statement.executeUpdate();
-                System.out.println("Successfully added task to DB");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return getTask(id);
-    }
-
-    @Override
     public void setTaskStatus(String id, boolean status) {
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             PreparedStatement statement = conn.prepareStatement(CHANGE_TASK_STATUS);
@@ -97,51 +142,6 @@ public class SqlHandler implements TaskManager {
             statement.setString(2, id);
             statement.executeUpdate();
             System.out.println("Successfully marked task complete in DB");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public ArrayList<Task> getAllTasks(){
-        ArrayList<Task> tasks = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            Statement statement = conn.createStatement();
-            ResultSet taskSet = statement.executeQuery(SELECT_ALL_TASKS);
-            while(taskSet.next()){
-                Task task = new Task(taskSet.getString(1), taskSet.getString(2), taskSet.getDate(3));
-                task.setTargetDate(taskSet.getDate(3));
-                tasks.add(task);
-            }
-            System.out.println("Successfully retrieved all tasks");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tasks;
-    }
-
-    @Override
-    public Task getTask(String id){
-        Task task = null;
-        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            PreparedStatement statement = conn.prepareStatement(SELECT_TASK);
-            statement.setString(1, id);
-            ResultSet taskSet = statement.executeQuery();
-            taskSet.next();
-            task = new Task(taskSet.getString(1), taskSet.getString(2), taskSet.getDate(3));
-            System.out.println("Successfully retrieved tasks: " + id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return task;
-    }
-
-    @Override
-    public void clearTasks(){
-        try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
-            Statement statement = conn.createStatement();
-            statement.executeQuery(CLEAR_TABLE);
-            System.out.println("Successfully cleared all tasks");
         } catch (SQLException e) {
             e.printStackTrace();
         }

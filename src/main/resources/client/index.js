@@ -5,8 +5,8 @@ $(document).ready(function() {
 
     // Cache fields
     var $tasks = $('#tasks');
-    var $target_date = $('#target_date');
-    var $task_container = $('#task_container')
+    var $target_date = $('.target_date');
+    var $task_container = $('.task_container')
 
 // ------------------------------------------- AJAX REQUESTS -----------------------------------------------------------
 
@@ -105,19 +105,14 @@ $(document).ready(function() {
 
     // Updates checkboxes
     $tasks.delegate('.status', 'click', function(){
-/*        var $task_description = $(this).closest('.update_form', '.task_description'); //TODO: Why is this selection the wrong element?
-        console.log($task_description);
-        $task_description.prop('disabled', false);*/
-        var $checkedTask = $(this).closest('form', '.update_form');
-        var taskToUpdate = JSON.stringify($checkedTask.serializeData());
-        console.log(taskToUpdate);
+        var task_to_update = JSON.stringify($(this).serializeData());
+        console.log(task_to_update);
 
         $.ajax({
             url: '/tasks/' + $(this).attr('data-id'),
             type: 'PUT',
-            data: taskToUpdate
+            data: task_to_update
         }).done(function(response, textStatus, jqXHR){
-
             console.log("Put successful.");
             console.log("Response: " + response);
             console.log("Text Status: " + textStatus);
@@ -129,7 +124,34 @@ $(document).ready(function() {
         });
     });
 
-    //TODO: Handle edit button
+    // Enable editing of task
+    $tasks.delegate('.update_task', 'click', function(){
+       var $task_description = $(this).find('.task_description');
+       // TODO: Successfully send updated form
+       // TODO: Prevent multiple clicks when already on element
+       var $updated_form = $(this).find('.update_form').serializeData();
+       console.log($task_description);
+       console.log($updated_form);
+       $task_description.prop('disabled', false);
+
+/*       $(this).find('.update').on('click', function(){
+          $.ajax({
+              url: '/tasks/' + $(this).attr('data-id'),
+              type: 'PUT',
+              data: $updated_form
+          }).done(function(response, textStatus, jqXHR){
+             $task_description.prop('disabled', true);
+              console.log("Put successful.");
+              console.log("Response: " + response);
+              console.log("Text Status: " + textStatus);
+              console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+          }).fail(function(jqXHR, textStatus, errorThrown){
+              console.log("Error.");
+              console.log("Text Status: " + textStatus);
+              console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+          });
+       });*/
+    });
 
 
 // ---------------------------------------- HELPER FUNCTIONS -----------------------------------------------------------

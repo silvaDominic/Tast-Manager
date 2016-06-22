@@ -16,3 +16,13 @@ html{
     display: inline-block;
     position: relative;
 }
+
+.update_task{
+    opacity: 0.8;
+    border: solid black 1px;
+}
+
+.update_task:hover{
+    cursor: pointer;
+    opacity: 1;
+}

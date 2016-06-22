@@ -16,29 +16,30 @@
         <li>
             <div class = "task_container">
                 <div class = "update_task">
-                <form class = "update_form" action = "/tasks" method = "post" accept-charset = "utf-8"
-                enctype="application/x-www-form-urlencoded" autocomplete = "off" name = task_form novalidate>
-                    <fieldset>
-                        <div class = "form_group description">
-                            <input id = "task" class = "task_description" type = "text" name = "task_description" maxlength = "60"
-                            size = "60" value = "{{description}}" disabled>
-                        </div>
+                    <form class = "update_form" action = "/tasks" method = "post" accept-charset = "utf-8"
+                    enctype="application/x-www-form-urlencoded" autocomplete = "off" name = task_form novalidate>
+                        <fieldset>
+                            <div class = "form_group description">
+                                <input id = "task" class = "task_description" type = "text" name = "task_description" maxlength = "60"
+                                size = "60" value = "{{description}}" disabled>
+                            </div>
 
-                        <div class = "form_group date">
-                            <label for  = "target_date">Finish by:</label>
-                            <input id = "target_date" type = "text" name = target_date class = "dropdate" value = {{targetDate}}>
-                        </div>
+                            <div class = "form_group date">
+                                <label for  = "target_date">Finish by:</label>
+                                <input class = "target_date" type = "text" name = target_date class = "dropdate" value = {{targetDate}}>
+                            </div>
 
-                        <div class = "form_group checkbox">
-                            <input data-id = '{{id}}' class = 'status' name = 'status' type = 'checkbox'>
-                        </div>
+                            <div class = "form_group button update">
+                                <input type = "submit" value = "Update">
+                            </div>
+                        </fieldset>
+                    </form>
+                <div class = "checkbox">
+                    <input data-id = '{{id}}' class = 'status' name = 'status' type = 'checkbox'>
+                </div>
 
-                        <div class = "form_group button">
-                            <input type = "submit" value = "Update">
-                        </div>
-                    </fieldset>
-                </form>
-                <button data-id = '{{id}}' class = 'remove'>X</button>
+                <div class = "button">
+                    <button data-id = '{{id}}' class = 'remove'>X</button>
                 </div>
             </div>
         </li>
