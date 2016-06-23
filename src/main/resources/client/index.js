@@ -104,9 +104,17 @@ $(document).ready(function() {
     });
 
     // Updates checkboxes
-    $tasks.delegate('.status', 'click', function(){
+    $tasks.delegate('.status', 'click', function(event){
+        event.preventDefault();
         var task_to_update = JSON.stringify($(this).serializeData());
-        console.log(task_to_update);
+
+        // TODO: Figure out how to make this work
+        var checkbox_values = JSON.parse(localStorage.getItem('checkboxValues')) || {};
+        $(this).each(function(){
+            checkbox_values[this.id] = this.checked;
+        });
+        localStorage.setItem('checkbox_values', JSON.stringify(checkbox_values));
+        console.log("Checked: " + localStorage.getItem('checkbox_values'));
 
         $.ajax({
             url: '/tasks/' + $(this).attr('data-id'),
@@ -125,14 +133,15 @@ $(document).ready(function() {
     });
 
     // Enable editing of task
-    $tasks.delegate('.update_task', 'click', function(){
-       var $task_description = $(this).find('.task_description');
-       // TODO: Successfully send updated form
-       // TODO: Prevent multiple clicks when already on element
-       var $updated_form = $(this).find('.update_form').serializeData();
-       console.log($task_description);
-       console.log($updated_form);
-       $task_description.prop('disabled', false);
+    $tasks.delegate('.update_task', 'click', function(event){
+        event.preventDefault();
+        var $task_description = $(this).find('.task_description');
+        // TODO: Successfully send updated form
+        // TODO: Prevent multiple clicks when already on element
+        var $updated_form = $(this).find('.update_form').serializeData();
+        console.log("Task Description: " + $task_description);
+        console.log("Serialized form: " + $updated_form);
+        $task_description.prop('disabled', false);
 
 /*       $(this).find('.update').on('click', function(){
           $.ajax({
@@ -151,6 +160,13 @@ $(document).ready(function() {
               console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
           });
        });*/
+    });
+
+    // TODO: Figure out how to make this work with checkbox handler
+    // Mark checkboxes on page load
+    $.each(checkbox_values, function(key, value) {
+        console.log(key + " " + value);
+        $('#' + key).prop('checked', value);
     });
 
 

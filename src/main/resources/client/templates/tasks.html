@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>Task Manager</title>
 
-    <script src = "http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src = "https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <script src = "../client_resources/jquery-dropdate.js"></script>
     <script src = "../client_resources/date.format.js"></script>
     <script type = "text/javascript" src = "../index.js"></script>
@@ -34,8 +34,10 @@
                             </div>
                         </fieldset>
                     </form>
+                </div>
+
                 <div class = "checkbox">
-                    <input data-id = '{{id}}' class = 'status' name = 'status' type = 'checkbox'>
+                    <input id = "task_status" data-id = '{{id}}' class = 'status' name = 'status' type = 'checkbox'>
                 </div>
 
                 <div class = "button">
