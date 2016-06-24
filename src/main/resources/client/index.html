@@ -1,12 +1,13 @@
 <!DOCTYPE HTML>
 <html lang = "en">
     <head>
-        <meta charset="utf-8">
+        <meta charset="utf-8"/>
         <title>Task Manager</title>
 
         <script src = "https://code.jquery.com/jquery-2.2.3.min.js"></script>
         <script src = "client_resources/jquery-dropdate.js"></script>
         <script src = "client_resources/date.format.js"></script>
+        <script src = "client_resources/serialize.js"></script>
         <script src = "client_resources/mustache.min.js"></script>
         <script src = "client_resources/jquery.mustache.js"></script>
         <script type = "text/javascript" src = "index.js"></script>
@@ -16,7 +17,7 @@
     <body id = "body">
         <div id = "main_container" class = "container">
             <form id = "task_form" action = "/tasks" method = "post" accept-charset = "utf-8"
-            enctype="application/x-www-form-urlencoded" autocomplete="off" name = task_form novalidate >
+            enctype="application/x-www-form-urlencoded" autocomplete="off" name = task_form novalidate>
                 <fieldset>
                     <div class = "form_group">
                         <label for = "task">Task:</label>

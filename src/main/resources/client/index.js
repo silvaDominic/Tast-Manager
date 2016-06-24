@@ -67,8 +67,16 @@ $(document).ready(function() {
         type: 'GET'
     }).done(function(response, textStatus, jqXHR){
         $.each($.parseJSON(response), function(i, task){
-            insertTask(task);
+            insertTask(task, function(){
+                if (task.status == true){
+                    console.log("Task with status of 'true': ");
+                    console.log(task);
+                    console.log("Below should be the checkbox");
+                    console.log($('.test'));
+                    $('#tasks').find($('#' + task.id)).prop('checked', true);
+                }
             });
+        });
         console.log("Get successful.");
         console.log("Response: " + response);
         console.log("Text Status: " + textStatus);
@@ -83,7 +91,8 @@ $(document).ready(function() {
     $tasks.delegate('.remove', 'click', function() {
         // Cache task to delete <li>
         var $taskToDelete = $(this).closest('li');
-        console.log($taskToDelete);
+        console.log("Below are tests");
+        console.log($tasks.find('.test'));
 
         // AJAX request for deleting existing task
         $.ajax({
@@ -104,17 +113,8 @@ $(document).ready(function() {
     });
 
     // Updates checkboxes
-    $tasks.delegate('.status', 'click', function(event){
-        event.preventDefault();
+    $tasks.delegate('.status', 'click', function(){
         var task_to_update = JSON.stringify($(this).serializeData());
-
-        // TODO: Figure out how to make this work
-        var checkbox_values = JSON.parse(localStorage.getItem('checkboxValues')) || {};
-        $(this).each(function(){
-            checkbox_values[this.id] = this.checked;
-        });
-        localStorage.setItem('checkbox_values', JSON.stringify(checkbox_values));
-        console.log("Checked: " + localStorage.getItem('checkbox_values'));
 
         $.ajax({
             url: '/tasks/' + $(this).attr('data-id'),
@@ -162,83 +162,15 @@ $(document).ready(function() {
        });*/
     });
 
-    // TODO: Figure out how to make this work with checkbox handler
-    // Mark checkboxes on page load
-    $.each(checkbox_values, function(key, value) {
-        console.log(key + " " + value);
-        $('#' + key).prop('checked', value);
-    });
-
-
 // ---------------------------------------- HELPER FUNCTIONS -----------------------------------------------------------
 
     // Uses the mustache template engine to dynamically insert tasks into DOM
-    function insertTask(data){
+    function insertTask(data, callback){
         $.Mustache.load('templates/tasks.html', function() {
             $('#tasks').mustache('main_form', data);
-        });
-    }
-
-    // Serializes and constructs form data into JSON object
-    $.fn.serializeData = function()
-    {
-        var o = {};
-        var a = this.serializeArray({ checkboxesAsBools: true });
-        console.log(a);
-
-        $.each(a, function() {
-            if (o[this.name] !== undefined) {
-                if (!o[this.name].push) {
-                    o[this.name] = [o[this.name]];
-                }
-                o[this.name].push(this.value || '');
-            } else {
-                o[this.name] = this.value || '';
+            if (callback && typeof(callback) == 'function'){
+                callback();
             }
         });
-        return o;
-    };
-
-    (function ($) {
-
-         $.fn.serialize = function (options) {
-             return $.param(this.serializeArray(options));
-         };
-
-         $.fn.serializeArray = function (options) {
-             var o = $.extend({
-             checkboxesAsBools: false
-         }, options || {});
-
-         var rselectTextarea = /select|textarea/i;
-         var rinput = /text|hidden|password|search/i;
-
-         return this.map(function () {
-             return this.elements ? $.makeArray(this.elements) : this;
-         })
-         .filter(function () {
-             return this.name && !this.disabled &&
-                 (this.checked
-                 || (o.checkboxesAsBools && this.type === 'checkbox')
-                 || rselectTextarea.test(this.nodeName)
-                 || rinput.test(this.type));
-             })
-             .map(function (i, elem) {
-                 var val = $(this).val();
-                 return val == null ?
-                 null :
-                 $.isArray(val) ?
-                 $.map(val, function (val, i) {
-                     return { name: elem.name, value: val };
-                 }) :
-                 {
-                     name: elem.name,
-                     value: (o.checkboxesAsBools && this.type === 'checkbox') ? //moar ternaries!
-                            (this.checked ? 'true' : 'false') :
-                            val
-                 };
-             }).get();
-         };
-
-    })(jQuery);
+    }
 });

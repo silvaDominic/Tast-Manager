@@ -86,7 +86,6 @@ public class TaskController {
                 sqlHandler.changeTaskDate(id, new java.sql.Date(date.getTime()));
             }
             if (task.has("status")){
-                System.out.println(task.get("status"));
                 sqlHandler.setTaskStatus(id, Boolean.parseBoolean(task.get("status").toString()));
             }
             // Used to return task object WITH id back to client
