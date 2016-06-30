@@ -3,7 +3,6 @@ $.fn.serializeData = function()
 {
     var o = {};
     var a = this.serializeArray({ checkboxesAsBools: true });
-    console.log(a);
 
     $.each(a, function() {
         if (o[this.name] !== undefined) {

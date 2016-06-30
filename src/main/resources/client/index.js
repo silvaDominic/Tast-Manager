@@ -47,7 +47,11 @@ $(document).ready(function() {
             type: $form.attr('method'),
             data: taskToPost
         }).done(function(response, textStatus, jqXHR){
-            insertTask($.parseJSON(response));
+            insertTask($.parseJSON(response), function(){
+                $tasks.find($('.dropdate')).dropdate({
+                    dateFormat: 'mm-dd-yyyy'
+                    });
+            });
             console.log("Post successful.");
             console.log("Response: " + response);
             console.log("Text Status: " + textStatus);
@@ -58,6 +62,7 @@ $(document).ready(function() {
             console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
         }).always(function(){
             $inputs.prop("disabled", false);;
+
         });
     });
 
@@ -69,12 +74,11 @@ $(document).ready(function() {
         $.each($.parseJSON(response), function(i, task){
             insertTask(task, function(){
                 if (task.status == true){
-                    console.log("Task with status of 'true': ");
-                    console.log(task);
-                    console.log("Below should be the checkbox");
-                    console.log($('.test'));
-                    $('#tasks').find($('#' + task.id)).prop('checked', true);
+                    $tasks.find($('#' + task.id)).prop('checked', true);
                 }
+            $tasks.find($('.dropdate')).dropdate({
+                dateFormat: 'mm-dd-yyyy'
+                });
             });
         });
         console.log("Get successful.");
@@ -91,8 +95,6 @@ $(document).ready(function() {
     $tasks.delegate('.remove', 'click', function() {
         // Cache task to delete <li>
         var $taskToDelete = $(this).closest('li');
-        console.log("Below are tests");
-        console.log($tasks.find('.test'));
 
         // AJAX request for deleting existing task
         $.ajax({
@@ -105,17 +107,16 @@ $(document).ready(function() {
             console.log("Response: " + response);
             console.log("Text Status: " + textStatus);
             console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-      }).fail(function(jqXHR, textStatus, errorThrown){
+        }).fail(function(jqXHR, textStatus, errorThrown){
           console.log("Error.");
           console.log("Text Status: " + textStatus);
           console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-      });
+        });
     });
 
-    // Updates checkboxes
+    // Updates task status
     $tasks.delegate('.status', 'click', function(){
         var task_to_update = JSON.stringify($(this).serializeData());
-
         $.ajax({
             url: '/tasks/' + $(this).attr('data-id'),
             type: 'PUT',
@@ -133,33 +134,30 @@ $(document).ready(function() {
     });
 
     // Enable editing of task
-    $tasks.delegate('.update_task', 'click', function(event){
-        event.preventDefault();
+    $tasks.delegate('.update_container', 'click', function(){
         var $task_description = $(this).find('.task_description');
-        // TODO: Successfully send updated form
-        // TODO: Prevent multiple clicks when already on element
+        var $target_date = $(this).find('.target_date');
         var $updated_form = $(this).find('.update_form').serializeData();
-        console.log("Task Description: " + $task_description);
-        console.log("Serialized form: " + $updated_form);
         $task_description.prop('disabled', false);
-
-/*       $(this).find('.update').on('click', function(){
-          $.ajax({
-              url: '/tasks/' + $(this).attr('data-id'),
-              type: 'PUT',
-              data: $updated_form
-          }).done(function(response, textStatus, jqXHR){
-             $task_description.prop('disabled', true);
-              console.log("Put successful.");
-              console.log("Response: " + response);
-              console.log("Text Status: " + textStatus);
-              console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-          }).fail(function(jqXHR, textStatus, errorThrown){
-              console.log("Error.");
-              console.log("Text Status: " + textStatus);
-              console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-          });
-       });*/
+        $target_date.prop('disabled', false);
+        // TODO: Find out why blur isn't working; how to prevent multiple click events
+    }).blur(function(){
+        $.ajax({
+            url: '/tasks/' + $(this).attr('data-id'),
+            type: 'PUT',
+            data: $updated_form
+        }).done(function(response, textStatus, jqXHR){
+           $task_description.prop('disabled', true);
+           $target_date.prop('disabled', true);
+            console.log("Put successful.");
+            console.log("Response: " + response);
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            console.log("Error.");
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        });
     });
 
 // ---------------------------------------- HELPER FUNCTIONS -----------------------------------------------------------
