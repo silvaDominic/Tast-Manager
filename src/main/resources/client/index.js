@@ -67,6 +67,7 @@ $(document).ready(function() {
     });
 
     // AJAX call for getting current tasks
+    // TODO: Why is date formatting day - 1?
     $.ajax({
         url: '/tasks',
         type: 'GET'
@@ -75,6 +76,7 @@ $(document).ready(function() {
             insertTask(task, function(){
                 if (task.status == true){
                     $tasks.find($('#' + task.id)).prop('checked', true);
+                    console.log(task);
                 }
             $tasks.find($('.dropdate')).dropdate({
                 dateFormat: 'mm-dd-yyyy'

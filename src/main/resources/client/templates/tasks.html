@@ -18,26 +18,25 @@
                 <div class = "update_container">
                     <form class = "update_form" action = "/tasks" method = "post" accept-charset = "utf-8"
                     enctype="application/x-www-form-urlencoded" autocomplete = "off" name = task_form novalidate>
-                        <fieldset>
-                            <div class = "form_group description">
-                                <input id = "task" class = "task_description" type = "text" name = "task_description" maxlength = "60"
-                                size = "60" value = "{{description}}" disabled>
-                            </div>
+                        <div class = "form_group description">
+                            <input id = "task" class = "task_description" type = "text" name = "task_description" maxlength = "60"
+                            size = "60" value = "{{description}}" disabled>
+                        </div>
 
-                            <div class = "form_group date">
-                                <label for  = "target_date">Finish by:</label>
-                                <input class = "target_date dropdate" type = "text" name = target_date value = {{targetDate}} disabled>
-                            </div>
-                        </fieldset>
+                        <div class = "form_group date">
+                            <label for  = "target_date">Finish by:</label>
+                            <input class = "target_date dropdate" type = "text" name = target_date value = {{targetDate}} disabled>
+                        </div>
                     </form>
-                </div>
+                    <div class = button_group>
+                        <div class = "checkbox">
+                            <input id = "{{id}}" data-id = '{{id}}' class = 'status' name = 'status' type = 'checkbox'>
+                        </div>
 
-                <div class = "checkbox">
-                    <input id = "{{id}}" data-id = '{{id}}' class = 'status' name = 'status' type = 'checkbox'>
-                </div>
-
-                <div class = "button">
-                    <button data-id = '{{id}}' class = 'remove'>X</button>
+                        <div class = "button">
+                            <button data-id = '{{id}}' class = 'remove'>X</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </li>
