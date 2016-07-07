@@ -6,17 +6,17 @@ import java.sql.Date;
 public class Task {
     private String id;
     private String description;
-    private Date targetDate;
+    private java.util.Date targetDate;
     private boolean isComplete;
 
-    public Task(String id, String description, Date targetDate){
+    public Task(String id, String description, java.util.Date targetDate){
         this.id = id;
         this.description = description;
         this.targetDate = targetDate; // TODO: Add to parameters figuring out format
         this.isComplete = false;
     }
 
-    public Task(String id, String description, Date targetDate, boolean status){
+    public Task(String id, String description, java.util.Date targetDate, boolean status){
         this.id = id;
         this.description = description;
         this.targetDate = targetDate; // TODO: Add to parameters figuring out format
@@ -32,7 +32,7 @@ public class Task {
         return this.id;
     }
 
-    // Task description
+    // Task Description
     public String getDescription(){
         return this.description;
     }
@@ -41,15 +41,16 @@ public class Task {
         this.description = newTaskName;
     }
 
-    // Target date
-    public Date getTargetDate(){
+    // Target Date
+    public java.util.Date getTargetDate(){
         return this.targetDate;
     }
 
-    public void setTargetDate(Date newDate){
+    public void setTargetDate(java.util.Date newDate){
         this.targetDate = newDate;
     }
 
+    // Task Status
     public boolean getStatus(){
         return this.isComplete;
     }

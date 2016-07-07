@@ -5,7 +5,7 @@ import java.util.ArrayList;
  * Created by reclaimer on 6/6/16.
  */
 interface TaskManager {
-    public Task createTask(String newTask, Date targetDate);
+    public Task createTask(String newTask, java.util.Date targetDate);
 
     public void deleteTask(String id);
 
@@ -17,7 +17,7 @@ interface TaskManager {
 
     public void changeTaskDescription(String id, String newDescription);
 
-    public void changeTaskDate(String id, Date newDate);
+    public void changeTaskDate(String id, java.util.Date newDate);
 
     public void setTaskStatus(String id, boolean status);
 }

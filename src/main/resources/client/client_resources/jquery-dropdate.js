@@ -9,7 +9,7 @@
     defaults = {
 		minYear:new Date().getFullYear(),
 		maxYear:new Date().getFullYear() + 1,
-		format:'yyyy-mm-dd',
+		format:"UTC:yyyy-mm-dd'T'HH:MM:ss'Z'",
 		className:'dropdate-select',
 		defaultDate:new Date()
     };
@@ -43,18 +43,39 @@
         	s.opts.day = $(genselect(1, 31, 'Day'));
         	s.opts.month = $(genselect(1, 12, 'Month'));
         	s.opts.year = $(genselect(s.opts.minYear, s.opts.maxYear, 'Year'));
-        	
-			var date = Date.parse(d);
-			if(isNaN(date)){
-				date = new Date();
-			} else{
-				var date = new Date(date);
 
-				s.elem.val(date.format(s.opts.format));
-				s.opts.year.val(date.getFullYear());
-				s.opts.month.val(date.getMonth()+1);
-				s.opts.day.val(date.getDate());
-			}
+			console.log("Unparsed date: ");
+			console.log(d);
+
+			var date = d;
+
+            if(isNaN(date)) {
+                console.log("Date is not a number.");
+                date = new Date();
+            } else{
+                if(typeof(date) == 'string'){
+                    if($.isNumeric(date) && parseInt(date) == date){
+                        console.log("Date is valid.");
+                        date = parseInt(date);
+                        console.log(date);
+                    }
+                } else {
+                    date = Date.parse(d);
+                }
+                console.log("Parsed date: ");
+                console.log(date);
+                date = new Date(date);
+
+                console.log("New date using existing date: ");
+                console.log(date);
+                console.log("New date.getTime(): ");
+                console.log(date.getTime());
+
+                s.elem.val(date.format(s.opts.format));
+                s.opts.year.val(date.getFullYear());
+                s.opts.month.val(date.getMonth()+1);
+                s.opts.day.val(date.getDate());
+            }
 
 			var required = s.elem.prop('required');
 			
@@ -75,7 +96,7 @@
                 	s.elem.val('');
                 }
             }
-        	
+
     		s.opts.year.on('change', selectchange);
     		s.opts.month.on('change', selectchange);
     		s.opts.day.on('change', selectchange);
@@ -89,5 +110,4 @@
             }
         });
     };
-	
 })( jQuery, window, document );

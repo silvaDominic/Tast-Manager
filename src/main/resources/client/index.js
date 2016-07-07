@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $('.dropdate').dropdate({
-        dateFormat: 'mm-dd-yyyy'
+        dateFormat:"UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
     });
 
     // Cache fields
@@ -29,6 +29,7 @@ $(document).ready(function() {
         // Serialize form data
         var $form = $(this);
         var taskToPost = JSON.stringify($form.serializeData());
+        console.log("Task to post:");
         console.log(taskToPost);
 
         // Aborts any pending requests
@@ -49,7 +50,7 @@ $(document).ready(function() {
         }).done(function(response, textStatus, jqXHR){
             insertTask($.parseJSON(response), function(){
                 $tasks.find($('.dropdate')).dropdate({
-                    dateFormat: 'mm-dd-yyyy'
+                    dateFormat:"UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
                     });
             });
             console.log("Post successful.");
@@ -67,7 +68,6 @@ $(document).ready(function() {
     });
 
     // AJAX call for getting current tasks
-    // TODO: Why is date formatting day - 1?
     $.ajax({
         url: '/tasks',
         type: 'GET'
@@ -79,7 +79,7 @@ $(document).ready(function() {
                     console.log(task);
                 }
             $tasks.find($('.dropdate')).dropdate({
-                dateFormat: 'mm-dd-yyyy'
+                dateFormat:"UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
                 });
             });
         });

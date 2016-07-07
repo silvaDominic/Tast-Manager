@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static spark.Spark.*;
 
@@ -21,7 +22,6 @@ public class TaskController {
     private String username = "root";
     private String password = "roo7CLAUD1tis8";
     private SqlHandler sqlHandler;
-
 
     public TaskController(String dbURL, String username, String password){
         this.dbURL = dbURL;
@@ -58,11 +58,13 @@ public class TaskController {
         try {
             // Converts JSON string to JSON object
             JSONObject task = new JSONObject(request.body());
+            System.out.println("Post handler task object: " + task);
             // New date format created for parsing target_date from JSON object
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = dateFormat.parse(task.get("target_date").toString());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            java.util.Date date = dateFormat.parse(task.get("target_date").toString());
             // Inserts task into DB and stores as Task object to be returned back to client WITH id
-            newTask = sqlHandler.createTask(task.get("task_description").toString(), new java.sql.Date(date.getTime()));
+            newTask = sqlHandler.createTask(task.get("task_description").toString(), new java.sql.Timestamp(date.getTime()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -81,7 +83,7 @@ public class TaskController {
             }
             if (task.has("target_date")){
                 // New date format created for parsing target_date from JSON object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
                 Date date = dateFormat.parse(task.get("target_date").toString());
                 sqlHandler.changeTaskDate(id, new java.sql.Date(date.getTime()));
             }
@@ -140,5 +142,3 @@ public class TaskController {
         return jsonString;
     }
 }
-
-// TODO: Make handlers for Http methods
