@@ -119,6 +119,7 @@ $(document).ready(function() {
     // Updates task status
     $tasks.delegate('.status', 'click', function(){
         var task_to_update = JSON.stringify($(this).serializeData());
+        console.log(task_to_update);
         $.ajax({
             url: '/tasks/' + $(this).attr('data-id'),
             type: 'PUT',
@@ -136,29 +137,33 @@ $(document).ready(function() {
     });
 
     // Enable editing of task
-    $tasks.delegate('.update_container', 'click', function(){
+    $tasks.delegate('.update_form_group', 'click', function(event){
         var $task_description = $(this).find('.task_description');
         var $target_date = $(this).find('.target_date');
-        var $updated_form = $(this).find('.update_form').serializeData();
+        console.log($target_date);
         $task_description.prop('disabled', false);
         $target_date.prop('disabled', false);
-        // TODO: Find out why blur isn't working; how to prevent multiple click events
-    }).blur(function(){
-        $.ajax({
-            url: '/tasks/' + $(this).attr('data-id'),
-            type: 'PUT',
-            data: $updated_form
-        }).done(function(response, textStatus, jqXHR){
-           $task_description.prop('disabled', true);
-           $target_date.prop('disabled', true);
-            console.log("Put successful.");
-            console.log("Response: " + response);
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            console.log("Error.");
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        console.log("Clicked");
+        $(this).off(event);
+        $(this).change(function(){
+            var $updated_form = JSON.stringify($(this).find('.update_form').serializeData());
+            console.log($updated_form);
+            $.ajax({
+                url: '/tasks/' + $(this).find('#task').attr('data-id'),
+                type: 'PUT',
+                data: $updated_form
+            }).done(function(response, textStatus, jqXHR){
+               $task_description.prop('disabled', true);
+               $target_date.prop('disabled', true);
+                console.log("Put successful.");
+                console.log("Response: " + response);
+                console.log("Text Status: " + textStatus);
+                console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+            }).fail(function(jqXHR, textStatus, errorThrown){
+                console.log("Error.");
+                console.log("Text Status: " + textStatus);
+                console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+            });
         });
     });
 

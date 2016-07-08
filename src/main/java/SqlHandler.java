@@ -34,14 +34,13 @@ public class SqlHandler implements TaskManager {
     @Override
     public Task createTask(String newTask, java.util.Date targetDate) {
         String id = "";
-        System.out.println("Create task targetDate: " + targetDate);
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             if (conn != null) {
                 PreparedStatement statement = conn.prepareStatement(CREATE_TASK);
                 id = UUID.randomUUID().toString();
                 statement.setString(1, id);
                 statement.setString(2, newTask);
-                statement.setDate(3, new java.sql.Date(calendar.getTime().getTime()));
+                statement.setTimestamp(3, new java.sql.Timestamp(calendar.getTime().getTime()));
                 statement.setTimestamp(4, new java.sql.Timestamp(targetDate.getTime()));
                 statement.setBoolean(5, false);
                 statement.executeUpdate();
@@ -100,10 +99,7 @@ public class SqlHandler implements TaskManager {
             ResultSet taskSet = statement.executeQuery(SELECT_ALL_TASKS);
             while(taskSet.next()){
                 Task task = new Task(taskSet.getString(1), taskSet.getString(2), taskSet.getTimestamp(4), taskSet.getBoolean(5));
-                //task.setTargetDate(taskSet.getDate(3));
                 tasks.add(task);
-                System.out.println("getAllTasks timestamp: " + taskSet.getTimestamp(4));
-                System.out.println("getAllTasks date: " + task.getTargetDate());
             }
             System.out.println("Successfully retrieved all tasks");
         } catch (SQLException e) {
@@ -131,7 +127,7 @@ public class SqlHandler implements TaskManager {
         if (newDate == null) {return;}
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             PreparedStatement statement = conn.prepareStatement(CHANGE_TARGET_DATE);
-            statement.setDate(1, new java.sql.Date(newDate.getTime()));
+            statement.setTimestamp(1, new java.sql.Timestamp(newDate.getTime()));
             statement.setString(2, id);
             statement.executeUpdate();
             System.out.println("Successfully changed target date of task in DB");

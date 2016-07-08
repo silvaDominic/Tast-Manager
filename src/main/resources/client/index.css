@@ -13,6 +13,7 @@ html{
 
 ul{
     list-style-type: none;
+    border: solid blue 1px;
 }
 
 /*----------------------------------------------------- INDEX ---------------------------------------------------------*/
@@ -44,6 +45,14 @@ ul{
 }
 
 /*-------------------------------------------------- TASK LIST -------------------------------------------------------*/
+li{
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    border: solid cyan 1px;
+}
+
 .task_container{
     display: inline-block;
     position: relative;
@@ -55,9 +64,9 @@ ul{
 .update_container{
     display: inline-block;
     position: relative;
-
     height: 100%;
-    width: auto;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .update_form, .button_group{
@@ -65,9 +74,20 @@ ul{
     position: relative;
 }
 
+.update_form_group{
+    display: inline-block;
+    position: relative;
+    background-color: red;
+    padding: 2.5%;
+}
+
+.update_form_group:hover{
+    cursor: pointer;
+}
+
 .button_group{
     display: inline-block;
-    border-radius: 15vw;
+    border-radius: 50%;
     border: solid black 1px;
     background-color: orange;
 }

@@ -58,7 +58,6 @@ public class TaskController {
         try {
             // Converts JSON string to JSON object
             JSONObject task = new JSONObject(request.body());
-            System.out.println("Post handler task object: " + task);
             // New date format created for parsing target_date from JSON object
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -83,9 +82,10 @@ public class TaskController {
             }
             if (task.has("target_date")){
                 // New date format created for parsing target_date from JSON object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                 Date date = dateFormat.parse(task.get("target_date").toString());
-                sqlHandler.changeTaskDate(id, new java.sql.Date(date.getTime()));
+                sqlHandler.changeTaskDate(id, new java.util.Date(date.getTime()));
             }
             if (task.has("status")){
                 sqlHandler.setTaskStatus(id, Boolean.parseBoolean(task.get("status").toString()));
