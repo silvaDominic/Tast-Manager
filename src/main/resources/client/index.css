@@ -44,6 +44,11 @@ ul{
     position: relative;
 }
 
+#delete_all_container{
+    display: inline-block;
+    position: relative;
+}
+
 /*-------------------------------------------------- TASK LIST -------------------------------------------------------*/
 li{
     display: inline-block;
@@ -74,14 +79,14 @@ li{
     position: relative;
 }
 
-.update_form_group{
+.update_form_container{
     display: inline-block;
     position: relative;
     background-color: red;
     padding: 2.5%;
 }
 
-.update_form_group:hover{
+.update_form_container:hover{
     cursor: pointer;
 }
 

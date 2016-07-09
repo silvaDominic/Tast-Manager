@@ -68,7 +68,10 @@ public class SqlHandler implements TaskManager {
     public void clearTasks(){
         try (Connection conn = DriverManager.getConnection(this.dbURL, this.username, this.password)) {
             Statement statement = conn.createStatement();
-            statement.executeQuery(CLEAR_TABLE);
+            ResultSet taskSet = statement.executeQuery(CLEAR_TABLE);
+            while (taskSet.next()){
+                deleteTask(taskSet.getString(1));
+            }
             System.out.println("Successfully cleared all tasks");
         } catch (SQLException e) {
             e.printStackTrace();

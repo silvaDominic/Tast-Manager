@@ -9,6 +9,25 @@ $(document).ready(function() {
     var $task_container = $('.task_container')
 
 // ------------------------------------------- AJAX REQUESTS -----------------------------------------------------------
+    // Variables for GET AJAX request
+    var allTasksURL = '/tasks';
+    var httpReq = 'GET';
+    var doneLogic = function(response){
+        $.each($.parseJSON(response), function(i, task){
+            insertTask(task, function(){
+                if (task.status == true){
+                    $tasks.find($('#' + task.id)).prop('checked', true);
+                    console.log(task);
+                }
+            $tasks.find($('.dropdate')).dropdate({
+                dateFormat:"UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+                });
+            });
+        });
+    }
+
+    // AJAX call for GETTING current tasks
+    ajaxCall(allTasksURL, httpReq, 'undefined', doneLogic);
 
     // Handler for submitting form data
     // Binds submit event from form
@@ -29,8 +48,6 @@ $(document).ready(function() {
         // Serialize form data
         var $form = $(this);
         var taskToPost = JSON.stringify($form.serializeData());
-        console.log("Task to post:");
-        console.log(taskToPost);
 
         // Aborts any pending requests
         if (request) {
@@ -42,128 +59,83 @@ $(document).ready(function() {
         // Briefly disables input fields during duration of AJAX request
         $inputs.prop("disabled", true);
 
-        // AJAX request for posting new task
-        $.ajax({
-            url: $form.attr('action'),
-            type: $form.attr('method'),
-            data: taskToPost
-        }).done(function(response, textStatus, jqXHR){
+        // Variables for POST AJAX request
+        var postTaskURL = $form.attr('action');
+        var httpReq = $form.attr('method');
+        var doneLogic = function(response){
             insertTask($.parseJSON(response), function(){
                 $tasks.find($('.dropdate')).dropdate({
                     dateFormat:"UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
                     });
             });
-            console.log("Post successful.");
-            console.log("Response: " + response);
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            console.log("Error.");
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        }).always(function(){
-            $inputs.prop("disabled", false);;
+        }
+        // Reenable inputs after every request
+        var alwaysLogic = function(){
+            $inputs.prop("disabled", false);
+        }
 
-        });
+        // AJAX request for POSTING new task
+        ajaxCall(postTaskURL, httpReq, taskToPost, doneLogic, 'undefined', alwaysLogic);
     });
 
-    // AJAX call for getting current tasks
-    $.ajax({
-        url: '/tasks',
-        type: 'GET'
-    }).done(function(response, textStatus, jqXHR){
-        $.each($.parseJSON(response), function(i, task){
-            insertTask(task, function(){
-                if (task.status == true){
-                    $tasks.find($('#' + task.id)).prop('checked', true);
-                    console.log(task);
-                }
-            $tasks.find($('.dropdate')).dropdate({
-                dateFormat:"UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
-                });
-            });
-        });
-        console.log("Get successful.");
-        console.log("Response: " + response);
-        console.log("Text Status: " + textStatus);
-        console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-    }).fail(function(jqXHR, textStatus, errorThrown){
-        console.log("Error.");
-        console.log("Text Status: " + textStatus);
-        console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-    });
-
-    // Handler for deleting selected tasks
+    // Handler for DELETING selected tasks
     $tasks.delegate('.remove', 'click', function() {
-        // Cache task to delete <li>
+        // Variables for DELETE AJAX request
+        var taskURL = '/tasks/' + $(this).attr('data-id');
+        var httpReq = 'DELETE';
         var $taskToDelete = $(this).closest('li');
-
-        // AJAX request for deleting existing task
-        $.ajax({
-            url: '/tasks/' + $(this).attr('data-id'),
-            type: 'DELETE'
-        }).done(function(response, textStatus, jqXHR){
+        var doneLogic = function(){
             // Remove from DOM
             $taskToDelete.remove();
-            console.log("Delete successful.");
-            console.log("Response: " + response);
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        }).fail(function(jqXHR, textStatus, errorThrown){
-          console.log("Error.");
-          console.log("Text Status: " + textStatus);
-          console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        });
+        }
+        // AJAX call for DELETING current tasks
+        ajaxCall(taskURL, httpReq, 'undefined', doneLogic);
+    });
+
+    // Handler for DELETING ALL tasks
+    $('#delete_all').on('click', function(){
+        var allTasksURL = '/tasks';
+        var httpReq = 'DELETE';
+        // AJAX call for DELETING current tasks
+        ajaxCall(allTasksURL, httpReq);
+        $('ul > li').each(function(){
+            $(this).remove();
+        })
     });
 
     // Updates task status
     $tasks.delegate('.status', 'click', function(){
+        // Variables for PUT AJAX request
+        var taskURL = '/tasks/' + $(this).attr('data-id');
+        var httpReq = 'PUT';
         var task_to_update = JSON.stringify($(this).serializeData());
-        console.log(task_to_update);
-        $.ajax({
-            url: '/tasks/' + $(this).attr('data-id'),
-            type: 'PUT',
-            data: task_to_update
-        }).done(function(response, textStatus, jqXHR){
-            console.log("Put successful.");
-            console.log("Response: " + response);
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            console.log("Error.");
-            console.log("Text Status: " + textStatus);
-            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-        });
+        // AJAX call for UPDATING status of current task
+        ajaxCall(taskURL, httpReq, task_to_update);
     });
 
-    // Enable editing of task
-    $tasks.delegate('.update_form_group', 'click', function(event){
+    // Enables editing of existing task
+    $tasks.delegate('.update_form_container', 'click', function(event){
+        // Cache fields
         var $task_description = $(this).find('.task_description');
         var $target_date = $(this).find('.target_date');
-        console.log($target_date);
+        // Enable fields
         $task_description.prop('disabled', false);
         $target_date.prop('disabled', false);
-        console.log("Clicked");
+        // Prevents multiple clicks
         $(this).off(event);
+
+        // Update task if changed
         $(this).change(function(){
+            // Variables for PUT AJAX request
+            var taskURL = $tasks.find($('.update_form')).attr('action') + $(this).find('#task').attr('data-id');
+            var httpReq = $tasks.find($('.update_form')).attr('method');
             var $updated_form = JSON.stringify($(this).find('.update_form').serializeData());
-            console.log($updated_form);
-            $.ajax({
-                url: '/tasks/' + $(this).find('#task').attr('data-id'),
-                type: 'PUT',
-                data: $updated_form
-            }).done(function(response, textStatus, jqXHR){
+            var doneLogic = function(){
                $task_description.prop('disabled', true);
                $target_date.prop('disabled', true);
-                console.log("Put successful.");
-                console.log("Response: " + response);
-                console.log("Text Status: " + textStatus);
-                console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-            }).fail(function(jqXHR, textStatus, errorThrown){
-                console.log("Error.");
-                console.log("Text Status: " + textStatus);
-                console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
-            });
+            }
+            // AJAX call for UPDATING task
+            ajaxCall(taskURL, httpReq, $updated_form, doneLogic);
         });
     });
 
@@ -175,6 +147,33 @@ $(document).ready(function() {
             $('#tasks').mustache('main_form', data);
             if (callback && typeof(callback) == 'function'){
                 callback();
+            }
+        });
+    }
+
+    function ajaxCall(_url, _type, _data, doneHelperFunction, failHelpFunction, alwaysHelperFunction){
+        $.ajax({
+            url: _url,
+            type: _type,
+            data: _data
+        }).done(function(response, textStatus, jqXHR){
+            if (typeof(doneHelperFunction) != 'undefined'){
+                doneHelperFunction(response);
+            }
+            console.log(_type + " successful.");
+            console.log("Response: " + response);
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            if (typeof(failHelperFunction) != 'undefined'){
+                failHelperFunction(response);
+            }
+            console.log("Error.");
+            console.log("Text Status: " + textStatus);
+            console.log("JQ XMLHttpReq: " + jQuery.parseJSON(jqXHR.responseText));
+        }).always(function(){
+            if (typeof(alwaysHelperFunction) != 'undefined'){
+                alwaysHelperFunction();
             }
         });
     }

@@ -16,22 +16,27 @@
 
     <body id = "body">
         <div id = "main_container" class = "container">
-            <form id = "task_form" action = "/tasks" method = "post" accept-charset = "utf-8"
-            enctype="application/x-www-form-urlencoded" autocomplete="off" name = task_form novalidate>
-                <fieldset>
-                    <div class = "form_group">
-                        <label for = "task">Task:</label>
-                        <input id = "task" type = "text" name = "task_description" maxlength = "60" size = "60">
-                    </div>
-                    <div class = "form_group">
-                        <label for  = "target_date">Finish by:</label>
-                        <input id = "target_date" type = "text" name = target_date class = "dropdate">
-                    </div>
-                    <div id = "add" class = "form_group button">
-                        <input type = "submit" value = "Add">
-                    </div>
-                </fieldset>
-            </form>
+            <div id = "form container">
+                <form id = "task_form" action = "/tasks" method = "POST" accept-charset = "utf-8"
+                enctype="application/x-www-form-urlencoded" autocomplete="off" name = task_form novalidate>
+                    <fieldset>
+                        <div class = "form_group">
+                            <label for = "task">Task:</label>
+                            <input id = "task" type = "text" name = "task_description" maxlength = "60" size = "60">
+                        </div>
+                        <div class = "form_group">
+                            <label for  = "target_date">Finish by:</label>
+                            <input id = "target_date" type = "text" name = target_date class = "dropdate">
+                        </div>
+                        <div id = "add" class = "form_group button">
+                            <input type = "submit" value = "Add">
+                        </div>
+                    </fieldset>
+                </form>
+                <div id = "delete_all_container" class = "button">
+                    <button id = "delete_all">Delete All</button>
+                </div>
+            </div>
             <div id = "task_list_container" class = "container">
                 <ul id = "tasks" class = "list"></ul>
             </div>
